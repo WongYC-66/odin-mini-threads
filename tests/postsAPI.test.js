@@ -203,7 +203,7 @@ describe('Posts API', () => {
     const response = await request(app)
       .delete('/posts')
       .set('Authorization', `Bearer ${token}`)
-      .send({ }); // Missing postId
+      .send({}); // Missing postId
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe('PostId are required');
@@ -235,6 +235,84 @@ describe('Posts API', () => {
 
     expect(response.statusCode).toBe(403);
     expect(response.body.message).toBe('You are not authorized to delete this post');
+  });
+
+  it('should like a post successfully', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'A post to be liked',
+        authorId: testUserId,
+      },
+    });
+
+    const response = await request(app)
+      .post('/posts/like-unlike')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId: newPost.id, like: true });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Post liked successfully');
+  });
+
+  it('should not allow liking the same post twice', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'A post to be liked, but not twice',
+        authorId: testUserId,
+        likedBy: {
+          connect: { id: testUserId }
+        }
+      },
+    });
+
+    const response = await request(app)
+      .post('/posts/like-unlike')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId: newPost.id, like: true });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('Post already liked');
+  });
+
+  it('should unlike a post successfully', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'A post to be liked, but not twice',
+        authorId: testUserId,
+        likedBy: {
+          connect: { id: testUserId }
+        }
+      },
+    });
+
+    const response = await request(app)
+      .post('/posts/like-unlike')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId: newPost.id, like: false });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Post unliked successfully');
+  });
+
+  it('should not allow unliking a post that is not liked', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'A post to be liked, but not twice',
+        authorId: testUserId,
+      },
+    });
+
+    const response = await request(app)
+      .post('/posts/like-unlike')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId: newPost.id, like: false });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('Post not liked by this user');
   });
 
 

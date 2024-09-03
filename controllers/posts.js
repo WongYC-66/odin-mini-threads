@@ -137,3 +137,61 @@ exports.delete_post = asyncHandler(async (req, res) => {
         message: 'Post deleted successfully',
     });
 });
+
+// Like or unlike a post
+exports.like_unlike_post = asyncHandler(async (req, res) => {
+    const postId = Number(req.body.postId); // Extract postId and like from request body
+    const like = Boolean(req.body.like); // Extract postId and like from request body
+    const userId = Number(req.user.id); // Get the ID of the authenticated user
+
+    // Validate request data
+    if (!postId || req.body.like === undefined) {
+        return res.status(400).json({ message: 'PostId and like status are required' });
+    }
+
+    // Check if the post exists
+    const post = await prisma.post.findUnique({
+        where: { id: postId },
+        include: { likedBy: true } // Include likedBy to check if user already liked the post
+    });
+
+    if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const alreadyLiked = post.likedBy.some(user => user.id === userId);
+
+    if (like) {
+        // Like the post
+        if (alreadyLiked) {
+            return res.status(400).json({ message: 'Post already liked' });
+        }
+
+        await prisma.post.update({
+            where: { id: postId },
+            data: {
+                likedBy: {
+                    connect: { id: userId }
+                }
+            }
+        });
+
+        return res.status(200).json({ message: 'Post liked successfully' });
+    } else {
+        // Unlike the post
+        if (!alreadyLiked) {
+            return res.status(400).json({ message: 'Post not liked by this user' });
+        }
+
+        await prisma.post.update({
+            where: { id: postId },
+            data: {
+                likedBy: {
+                    disconnect: { id: userId }
+                }
+            }
+        });
+
+        return res.status(200).json({ message: 'Post unliked successfully' });
+    }
+});
