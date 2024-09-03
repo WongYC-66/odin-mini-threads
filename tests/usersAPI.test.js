@@ -6,6 +6,7 @@ const app = require('../app'); // Import the Express app
 describe('Users API', () => {
   let token;
 
+  // ----- before all -----
   beforeAll(async () => {
     // Setup code here if needed, e.g., connecting to a test database
     await request(app)
@@ -17,13 +18,25 @@ describe('Users API', () => {
       .send({ username: 'testuser', password: 'testpassword' });
 
     token = response.body.token;
-    // console.log({token})
-  });
 
+    await request(app)
+      .post('/users/sign-up')
+      .send({ username: 'dummyuser1', password: 'dummypassword' });
+
+    await request(app)
+      .post('/users/sign-up')
+      .send({ username: 'dummyuser2', password: 'dummypassword' });
+  });
+  // ----- before all -----
+
+  // ----- after all -----
   afterAll(async () => {
     // Cleanup code here if needed, e.g., closing database connections
     // Note: Implement cleanup logic if you have a test database
+    // await prisma.$disconnect();
   });
+  // ----- after all -----
+
 
   it('should sign up a new user', async () => {
     const response = await request(app)
@@ -42,22 +55,37 @@ describe('Users API', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.token).toBeDefined();
   });
-  return
 
-  it('should access protected profile route', async () => {
+  it('should follow an existing user', async () => {
+    console.log('Generated Token:', token);
     const response = await request(app)
-      .get('/users/profile')
-      .set('Authorization', `Bearer ${token}`);
+      .post('/users/follow')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ followId: '2'});
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.user).toBeDefined();
-    expect(response.body.user.username).toBe('testuser');
+    expect(response.body.message).toBe('User followed successfully');
   });
 
-  it('should not access protected profile route without token', async () => {
+  it('should not follow an existing user without authentication', async () => {
+    console.log('Generated Token:', token);
     const response = await request(app)
-      .get('/users/profile');
+      .post('/users/follow')
+      .send({ followId: '2'});
 
     expect(response.statusCode).toBe(401);
   });
+
+  it('should return 404 for non-existent user to follow', async () => {
+    console.log('Generated Token:', token);
+    const response = await request(app)
+      .post('/users/follow')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ followId: '152232'});
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('User not found');
+  });
+
+
 });

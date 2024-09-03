@@ -1,6 +1,7 @@
 // passport.js
 const passport = require('passport');
 const { Strategy, ExtractJwt } = require('passport-jwt');
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -15,7 +16,7 @@ passport.use(
     new Strategy(opts, async (jwt_payload, done) => {
         try {
             const user = await prisma.user.findUnique({
-                where: { id: jwt_payload.id },
+                where: { id: Number(jwt_payload.id) },
             });
             if (user) {
                 return done(null, user);
