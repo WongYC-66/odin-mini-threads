@@ -2,7 +2,7 @@ Requirements
 The following requirements are a very global list of features your app should have. Because of the open-ended nature of this project, it’s possible that not all of them may apply to your chosen site, and that there might be core features of your site that aren’t mentioned here.
 
 1. Users must sign in to see anything except the sign-in page.
-2. Users should be able to sign in using your chosen authentication method.
+2. Users should be able to sign in using your chosen authentication method. -jwt
 3. Users can send follow requests to other users.
 4. Users can create posts (begin with text only).
 5. Users can like posts.

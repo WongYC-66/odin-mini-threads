@@ -8,12 +8,18 @@
     "serverstart": "DEBUG=odin-odin-book:* npm run dev"
   },
   "dependencies": {
+    "@prisma/client": "^5.19.1",
+    "bcrypt": "^5.1.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.4.5",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "~1.9.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pug": "^3.0.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",

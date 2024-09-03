@@ -6,12 +6,22 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var postsRouter = require('./routes/posts');
+var commentsRouter = require('./routes/comments');
+var profilesRouter = require('./routes/profiles');
+
+// Loading .env files if not product enviroment
+if(process.env.environment != 'production')
+  require('dotenv').config()
+
+// 
+require('./controllers/passport.js'); // Passport + JWT configuration
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -21,6 +31,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/posts', usersRouter);
+app.use('/comments', usersRouter);
+app.use('/profiles', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
