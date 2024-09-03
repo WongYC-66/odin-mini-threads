@@ -28,7 +28,7 @@ model Post {
   id        Int       @id @default(autoincrement())
   content   String
   timestamp DateTime  @default(now())
-  author    User      @relation(fields: [authorId], references: [id])
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int
   likedBy   User[]    @relation("PostLikes")
   commments Comment[]
@@ -38,7 +38,7 @@ model Comment {
   id        Int      @id @default(autoincrement())
   content   String
   timestamp DateTime @default(now())
-  Post      Post     @relation(fields: [postId], references: [id])
+  Post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
 }
 
@@ -46,6 +46,6 @@ model Profile {
   id            Int     @id @default(autoincrement())
   description   String?
   photoURL      String?
-  profileUser   User    @relation(fields: [profileUserId], references: [id])
+  profileUser   User    @relation(fields: [profileUserId], references: [id], onDelete: Cascade)
   profileUserId Int     @unique
 }

@@ -5,6 +5,9 @@ const app = require('../app'); // Import the Express app
 
 describe('Users API', () => {
   let token;
+  let testUserId;
+  let dummyUser1Id;
+  let dummyUser2Id;
 
   // ----- before all -----
   beforeAll(async () => {
@@ -18,14 +21,18 @@ describe('Users API', () => {
       .send({ username: 'testuser', password: 'testpassword' });
 
     token = response.body.token;
+    testUserId = response.body.id
 
-    await request(app)
+    const dummyResponse1 = await request(app)
       .post('/users/sign-up')
       .send({ username: 'dummyuser1', password: 'dummypassword' });
 
-    await request(app)
+    const dummyResponse2 = await request(app)
       .post('/users/sign-up')
       .send({ username: 'dummyuser2', password: 'dummypassword' });
+
+    dummyUser1Id = dummyResponse1.body.id
+    dummyUser2Id = dummyResponse2.body.id
   });
   // ----- before all -----
 
@@ -60,7 +67,12 @@ describe('Users API', () => {
     const response = await request(app)
       .post('/users/follow')
       .set('Authorization', `Bearer ${token}`)
-      .send({ followId: '2'});
+      .send({ followId: dummyUser1Id });
+
+    await request(app)
+      .post('/users/follow')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ followId: dummyUser2Id });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('User followed successfully');
@@ -69,7 +81,7 @@ describe('Users API', () => {
   it('should not follow an existing user without authentication', async () => {
     const response = await request(app)
       .post('/users/follow')
-      .send({ followId: '2'});
+      .send({ followId: dummyUser2Id });
 
     expect(response.statusCode).toBe(401);
   });
@@ -78,7 +90,7 @@ describe('Users API', () => {
     const response = await request(app)
       .post('/users/follow')
       .set('Authorization', `Bearer ${token}`)
-      .send({ followId: '152232'});
+      .send({ followId: '152232' });
 
     expect(response.statusCode).toBe(404);
     expect(response.body.message).toBe('User not found');
@@ -88,7 +100,7 @@ describe('Users API', () => {
     const response = await request(app)
       .post('/users/unfollow')
       .set('Authorization', `Bearer ${token}`)
-      .send({ unfollowId: '2' });
+      .send({ unfollowId: dummyUser1Id });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toBe('User unfollowed successfully');
@@ -97,7 +109,7 @@ describe('Users API', () => {
   it('should not unfollow a user without authentication', async () => {
     const response = await request(app)
       .post('/users/unfollow')
-      .send({ unfollowId: '2' });
+      .send({ unfollowId: dummyUser2Id });
 
     expect(response.statusCode).toBe(401);
   });
@@ -106,7 +118,7 @@ describe('Users API', () => {
     const response = await request(app)
       .post('/users/unfollow')
       .set('Authorization', `Bearer ${token}`)
-      .send({ unfollowId: '1' }); // Assuming the ID is 1 for the same user
+      .send({ unfollowId: testUserId }); // Assuming the ID is 1 for the same user
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe('Cannot unfollow yourself');

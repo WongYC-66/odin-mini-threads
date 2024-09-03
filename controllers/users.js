@@ -19,7 +19,10 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
     // Automatically log in user after registration
     const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token: `${token}` });
+    res.json({
+        id: user.id,
+        token: `${token}`,
+    });
 });
 
 // Login controller
@@ -33,7 +36,10 @@ exports.login_post = asyncHandler(async (req, res) => {
     if (isMatch) {
         const payload = { id: user.id };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token: `${token}` });
+        res.json({
+            id: user.id,
+            token: `${token}`,
+        });
     } else {
         res.status(401).json({ message: 'Invalid credentials' });
     }
