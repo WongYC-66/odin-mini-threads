@@ -7,7 +7,7 @@
     "dev": "nodemon ./bin/www",
     "serverstart": "DEBUG=odin-odin-book:* npm run dev",
     "resetDB": "npx prisma migrate reset -f && node ./tests/populateDB.js",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",

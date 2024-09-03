@@ -16,6 +16,7 @@ const cleanseDatabase = async () => {
 
 describe('Posts API', () => {
   let token;
+  let token2;
   let testUserId;
   let dummyUser1Id;
 
@@ -42,13 +43,12 @@ describe('Posts API', () => {
       .send({ username: 'dummyUser1', password: 'password' });
 
     dummyUser1Id = dummyUser1Response.body.id;
+    token2 = dummyUser1Response.body.token
 
     await request(app)
       .post('/users/follow')
       .set('Authorization', `Bearer ${token}`)
       .send({ followId: dummyUser1Id });
-
-
 
   });
   // -------- before all --------
@@ -122,6 +122,63 @@ describe('Posts API', () => {
     expect(response.body.posts[0].content).toBe('This is a post by testuser');
     expect(response.body.posts[1].content).toBe('This is a post by dummyuser1');
 
+  });
+
+  it('should update a post successfully', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'Original Post by testuser',
+        authorId: testUserId,
+      },
+    });
+
+    const response = await request(app)
+      .put('/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'Updated content', postId: newPost.id });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Post updated successfully');
+    expect(response.body.post.content).toBe('Updated content');
+  });
+
+  it('should return 400 if content or postId is missing', async () => {
+    const response = await request(app)
+      .put('/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'Updated content' }); // Missing postId
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('Content and postId are required');
+  });
+
+  it('should return 404 if post is not found', async () => {
+    const response = await request(app)
+      .put('/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'Updated content', postId: 752349 }); // Non-existent postId
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('Post not found');
+  });
+
+  it('should return 403 if user is not the author', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'Original Post by testuser',
+        authorId: testUserId,
+      },
+    });
+
+    const response = await request(app)
+      .put('/posts')
+      .set('Authorization', `Bearer ${token2}`) // other user's token
+      .send({ content: 'Malicious update', postId: newPost.id});
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('You are not authorized to update this post');
   });
 
 });

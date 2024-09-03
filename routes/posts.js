@@ -11,7 +11,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), postsControlle
 router.post('/', passport.authenticate('jwt', { session: false }), postsController.create_post);
 
 // Route for user following (protected)
-// router.put('/', passport.authenticate('jwt', { session: false }), postsController.update_post);
+router.put('/', passport.authenticate('jwt', { session: false }), postsController.update_post);
 
 // Route for user un-following (protected)
 // router.delete('/', passport.authenticate('jwt', { session: false }), postsController.delete_post);
