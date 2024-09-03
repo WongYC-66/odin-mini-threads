@@ -16,6 +16,17 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
             password: hashedPassword,
         },
     });
+
+    // Automatically follow user self 
+    await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            following: {
+                connect: { id: user.id },
+            },
+        }
+    })
+
     // Automatically log in user after registration
     const payload = { id: user.id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });

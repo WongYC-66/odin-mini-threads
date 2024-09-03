@@ -3,6 +3,17 @@ process.env.NODE_ENV = 'test'
 const request = require('supertest');
 const app = require('../app'); // Import the Express app
 
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+const cleanseDatabase = async () => {
+  // reset prisma database
+  await prisma.user.deleteMany()
+  await prisma.post.deleteMany()
+  await prisma.comment.deleteMany()
+  await prisma.profile.deleteMany()
+}
+
 describe('Users API', () => {
   let token;
   let testUserId;
@@ -11,7 +22,10 @@ describe('Users API', () => {
 
   // ----- before all -----
   beforeAll(async () => {
-    // Setup code here if needed, e.g., connecting to a test database
+    // reset prisma database
+    await cleanseDatabase()
+
+    // create dummy user
     await request(app)
       .post('/users/sign-up')
       .send({ username: 'testuser', password: 'testpassword' });
@@ -39,8 +53,9 @@ describe('Users API', () => {
   // ----- after all -----
   afterAll(async () => {
     // Cleanup code here if needed, e.g., closing database connections
-    // Note: Implement cleanup logic if you have a test database
-    // await prisma.$disconnect();
+    // reset prisma database
+    await cleanseDatabase()
+    await prisma.$disconnect();
   });
   // ----- after all -----
 

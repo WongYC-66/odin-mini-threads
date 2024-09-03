@@ -5,7 +5,7 @@ const passport = require('passport')
 const postsController = require('../controllers/posts.js');
 
 // Route for user sign-up (protected)
-// router.get('/', passport.authenticate('jwt', { session: false }), postsController.get_post);
+router.get('/', passport.authenticate('jwt', { session: false }), postsController.get_post);
 
 // Route for user login (protected)
 router.post('/', passport.authenticate('jwt', { session: false }), postsController.create_post);
