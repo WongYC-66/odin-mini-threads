@@ -1,9 +1,16 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const passport = require('../controllers/passport.js'); // Import your passport configuration
+const usersController = require('../controllers/users.js');
+
+// Route for user sign-up (open to all)
+router.post('/sign-up', usersController.sign_up_post);
+
+// Route for user login (open to all)
+router.post('/login', usersController.login_post);
+
+// Route for protected resource
+// router.get('/profile', passport.authenticate('jwt', { session: false }), usersController.profile_get);
 
 module.exports = router;

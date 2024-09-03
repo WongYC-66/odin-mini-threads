@@ -11,10 +11,13 @@ var commentsRouter = require('./routes/comments');
 var profilesRouter = require('./routes/profiles');
 
 // Loading .env files if not product enviroment
-if(process.env.environment != 'production')
+if (process.env.environment != 'production')
   require('dotenv').config()
-
 // 
+
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient()
+
 require('./controllers/passport.js'); // Passport + JWT configuration
 
 var app = express();
@@ -36,21 +39,30 @@ app.use('/comments', usersRouter);
 app.use('/profiles', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(async function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // 
+  if (err.message != 'Not Found') {
+    console.log(err)
+    await prisma.$disconnect()
+    console.log("\n")
+    console.log(res.locals.error)
+  }
 
   // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
 
-console.log("access at : http://localhost:3000/ ")
+if (process.env.NODE_ENV != 'test')
+  console.log("access at : http://localhost:3000/ ")
 
 module.exports = app;

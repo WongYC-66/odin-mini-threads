@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
-    "serverstart": "DEBUG=odin-odin-book:* npm run dev"
+    "serverstart": "DEBUG=odin-odin-book:* npm run dev",
+    "resetDB": "npx prisma migrate reset -f && node ./tests/populateDB.js",
+    "test": "npm run resetDB && jest"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
@@ -14,6 +16,7 @@
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
     "express": "~4.16.1",
+    "express-async-handler": "^1.2.0",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
@@ -23,7 +26,9 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.4",
-    "prisma": "^5.19.1"
+    "prisma": "^5.19.1",
+    "supertest": "^7.0.0"
   }
 }
