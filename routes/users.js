@@ -10,8 +10,10 @@ router.post('/sign-up', usersController.sign_up_post);
 // Route for user login (open to all)
 router.post('/login', usersController.login_post);
 
-// Route for protected resource
+// Route for user following (protected)
 router.post('/follow', passport.authenticate('jwt', { session: false }), usersController.follow_post);
-// router.get('/profile', passport.authenticate('jwt', { session: false }), usersController.profile_get);
+
+// Route for user un-following (protected)
+router.post('/unfollow', passport.authenticate('jwt', { session: false }), usersController.unfollow_post);
 
 module.exports = router;

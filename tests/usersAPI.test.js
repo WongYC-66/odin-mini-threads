@@ -57,7 +57,6 @@ describe('Users API', () => {
   });
 
   it('should follow an existing user', async () => {
-    console.log('Generated Token:', token);
     const response = await request(app)
       .post('/users/follow')
       .set('Authorization', `Bearer ${token}`)
@@ -68,7 +67,6 @@ describe('Users API', () => {
   });
 
   it('should not follow an existing user without authentication', async () => {
-    console.log('Generated Token:', token);
     const response = await request(app)
       .post('/users/follow')
       .send({ followId: '2'});
@@ -77,7 +75,6 @@ describe('Users API', () => {
   });
 
   it('should return 404 for non-existent user to follow', async () => {
-    console.log('Generated Token:', token);
     const response = await request(app)
       .post('/users/follow')
       .set('Authorization', `Bearer ${token}`)
@@ -87,5 +84,42 @@ describe('Users API', () => {
     expect(response.body.message).toBe('User not found');
   });
 
+  it('should unfollow an existing user', async () => {
+    const response = await request(app)
+      .post('/users/unfollow')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ unfollowId: '2' });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('User unfollowed successfully');
+  });
+
+  it('should not unfollow a user without authentication', async () => {
+    const response = await request(app)
+      .post('/users/unfollow')
+      .send({ unfollowId: '2' });
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('should not unfollow yourself', async () => {
+    const response = await request(app)
+      .post('/users/unfollow')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ unfollowId: '1' }); // Assuming the ID is 1 for the same user
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('Cannot unfollow yourself');
+  });
+
+  it('should return 404 for non-existent user to unfollow', async () => {
+    const response = await request(app)
+      .post('/users/unfollow')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ unfollowId: '99349' }); // Non-existent user ID
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('User not found');
+  });
 
 });

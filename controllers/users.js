@@ -63,3 +63,32 @@ exports.follow_post = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: 'User followed successfully' });
 });
+
+// Unfollow controller (protected route)
+exports.unfollow_post = asyncHandler(async (req, res) => {
+    const userId = Number(req.user.id); // Get the ID of the authenticated user
+    const unfollowId = Number(req.body.unfollowId); // ID of the user to unfollow
+
+    if (userId === unfollowId) {
+        return res.status(400).json({ message: 'Cannot unfollow yourself' });
+    }
+
+    const userToUnfollow = await prisma.user.findUnique({
+        where: { id: unfollowId },
+    });
+
+    if (!userToUnfollow) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: {
+            following: {
+                disconnect: { id: unfollowId },
+            },
+        },
+    });
+
+    res.status(200).json({ message: 'User unfollowed successfully' });
+});
