@@ -175,10 +175,67 @@ describe('Posts API', () => {
     const response = await request(app)
       .put('/posts')
       .set('Authorization', `Bearer ${token2}`) // other user's token
-      .send({ content: 'Malicious update', postId: newPost.id});
+      .send({ content: 'Malicious update', postId: newPost.id });
 
     expect(response.statusCode).toBe(403);
     expect(response.body.message).toBe('You are not authorized to update this post');
   });
+
+  it('should delete a post successfully', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'A post pending to be deleted',
+        authorId: testUserId,
+      },
+    });
+
+    const response = await request(app)
+      .delete('/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId: newPost.id });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Post deleted successfully');
+  });
+
+  it('should return 400 if postId is missing', async () => {
+    const response = await request(app)
+      .delete('/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ }); // Missing postId
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('PostId are required');
+  });
+
+  it('should return 404 if post is not found', async () => {
+    const response = await request(app)
+      .delete('/posts')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId: "123456" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('Post not found');
+  });
+
+  it('should return 403 if user is not the author', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'A post pending to be deleted ~2',
+        authorId: testUserId,
+      },
+    });
+
+    const response = await request(app)
+      .delete(`/posts`)
+      .set('Authorization', `Bearer ${token2}`)
+      .send({ postId: newPost.id });
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('You are not authorized to delete this post');
+  });
+
 
 });

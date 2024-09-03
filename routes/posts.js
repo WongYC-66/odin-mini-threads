@@ -14,6 +14,6 @@ router.post('/', passport.authenticate('jwt', { session: false }), postsControll
 router.put('/', passport.authenticate('jwt', { session: false }), postsController.update_post);
 
 // Route for user un-following (protected)
-// router.delete('/', passport.authenticate('jwt', { session: false }), postsController.delete_post);
+router.delete('/', passport.authenticate('jwt', { session: false }), postsController.delete_post);
 
 module.exports = router;

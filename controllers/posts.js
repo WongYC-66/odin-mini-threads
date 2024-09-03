@@ -100,3 +100,40 @@ exports.update_post = asyncHandler(async (req, res) => {
         post: updatedPost
     });
 });
+
+
+// Delete a post
+exports.delete_post = asyncHandler(async (req, res) => {
+    const postId = Number(req.body.postId); // Extract content from request body
+    const userId = Number(req.user.id); // Get the ID of the authenticated user
+
+    // Validate request data
+    if (!postId) {
+        return res.status(400).json({ message: 'PostId are required' });
+    }
+
+    // Fetch the existing post
+    const post = await prisma.post.findUnique({
+        where: { id: postId }
+    });
+
+    // Check if the post exists
+    if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+    }
+
+    // Check if the authenticated user is the author of the post
+    if (post.authorId !== userId) {
+        return res.status(403).json({ message: 'You are not authorized to delete this post' });
+    }
+
+    // Delete the post
+    await prisma.post.delete({
+        where: { id: Number(postId) }
+    });
+
+    // Send the response
+    res.status(200).json({
+        message: 'Post deleted successfully',
+    });
+});
