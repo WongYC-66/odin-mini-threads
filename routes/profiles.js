@@ -7,4 +7,10 @@ const profilesController = require('../controllers/profiles.js');
 // Route GET profiles of all user.(protected)
 router.get('/', passport.authenticate('jwt', { session: false }), profilesController.get_profiles);
 
+// Route GET profiles of all user.(protected)
+router.put('/', passport.authenticate('jwt', { session: false }), profilesController.update_profile);
+
+
+
+
 module.exports = router;

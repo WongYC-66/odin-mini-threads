@@ -54,7 +54,7 @@ describe('Users API', () => {
   afterAll(async () => {
     // Cleanup code here if needed, e.g., closing database connections
     // reset prisma database
-    await cleanseDatabase()
+    // await cleanseDatabase()
     await prisma.$disconnect();
   });
   // ----- after all -----

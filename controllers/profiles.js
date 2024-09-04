@@ -18,3 +18,26 @@ exports.get_profiles = asyncHandler(async (req, res) => {
         profiles
     });
 });
+
+// Update user profile (protected route)
+exports.update_profile = asyncHandler(async (req, res) => {
+    const userId = Number(req.user.id); // Assuming passport sets req.user
+    const { firstName, lastName, bio, photoURL } = req.body;
+
+    // Update the user profile
+    const updatedProfile = await prisma.profile.update({
+        where: { userId },
+        data: {
+            firstName,
+            lastName,
+            bio,
+            photoURL
+        }
+    });
+
+    // Send the response
+    res.status(200).json({
+        message: 'Profile updated successfully',
+        profile: updatedProfile
+    });
+});

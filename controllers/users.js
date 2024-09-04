@@ -17,13 +17,21 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
         },
     });
 
-    // Automatically follow user self 
+    // Automatically follow user self , create blank profile
     await prisma.user.update({
         where: { id: user.id },
         data: {
             following: {
                 connect: { id: user.id },
             },
+            userProfile: {
+                create: {
+                    firstName: '',
+                    lastName: '',
+                    bio: 'the bio is empty, write something here ...',
+                    photoURL: '',
+                }
+            }
         }
     })
 

@@ -1,8 +1,8 @@
 process.env.NODE_ENV = 'test'
 
 const request = require('supertest');
-const app = require('../app'); // Import the Express app
-const {main: populateDB} = require('./populateDB.js') 
+const app = require('../app.js'); // Import the Express app
+const { main: populateDB } = require('./populateDB.js')
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -57,8 +57,8 @@ describe('Users API', () => {
   afterAll(async () => {
     // Cleanup code here if needed, e.g., closing database connections
     // reset prisma database
-    // await cleanseDatabase()
-    // await prisma.$disconnect();
+    await cleanseDatabase()
+    await prisma.$disconnect();
   });
   // ----- after all -----
 
@@ -75,6 +75,33 @@ describe('Users API', () => {
     expect(response.body.profiles[0].bio).toBeDefined();
     expect(response.body.profiles[0].photoURL).toBeDefined();
   });
+
+  it('should update the user profile successfully', async () => {
+    const response = await request(app)
+      .put('/profiles')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        firstName: 'Jane',
+        lastName: 'Doe',
+        bio: 'Updated bio',
+        photoURL: 'updated.jpg'
+      })
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty('message', 'Profile updated successfully');
+    expect(response.body.profile.firstName).toBe('Jane');
+    expect(response.body.profile.lastName).toBe('Doe');
+    expect(response.body.profile.bio).toBe('Updated bio');
+    expect(response.body.profile.photoURL).toBe('updated.jpg');
+  });
+
+  it('put - should return 401 if no token is provided/invalid token', async () => {
+    const response = await request(app)
+      .put('/profiles')
+
+    expect(response.statusCode).toBe(401);
+  });
+
 
 
 });
