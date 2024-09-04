@@ -77,7 +77,7 @@ describe('Posts API', () => {
   });
 
 
-  it('should return 400 if content is missing', async () => {
+  it('create - should return 400 if content is missing', async () => {
     const response = await request(app)
       .post('/posts')
       .set('Authorization', `Bearer ${token}`)
@@ -87,7 +87,7 @@ describe('Posts API', () => {
     expect(response.body.message).toBe('Content is required');
   });
 
-  it('should return 401 if no token is provided/invalid token', async () => {
+  it('create - should return 401 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .post('/posts')
       .send({ content: 'This is a test post' });
@@ -124,6 +124,13 @@ describe('Posts API', () => {
 
   });
 
+  it('get - should return 401 if no token is provided/invalid token', async () => {
+    const response = await request(app)
+      .get('/posts')
+
+    expect(response.statusCode).toBe(401);
+  });
+
   it('should update a post successfully', async () => {
     // Create a post by the self
     const newPost = await prisma.post.create({
@@ -143,7 +150,7 @@ describe('Posts API', () => {
     expect(response.body.post.content).toBe('Updated content');
   });
 
-  it('should return 400 if content or postId is missing', async () => {
+  it('update - should return 400 if content or postId is missing', async () => {
     const response = await request(app)
       .put('/posts')
       .set('Authorization', `Bearer ${token}`)
@@ -153,7 +160,7 @@ describe('Posts API', () => {
     expect(response.body.message).toBe('Content and postId are required');
   });
 
-  it('should return 404 if post is not found', async () => {
+  it('update - should return 404 if post is not found', async () => {
     const response = await request(app)
       .put('/posts')
       .set('Authorization', `Bearer ${token}`)
@@ -163,7 +170,7 @@ describe('Posts API', () => {
     expect(response.body.message).toBe('Post not found');
   });
 
-  it('should return 403 if user is not the author', async () => {
+  it('update - should return 403 if user is not the author', async () => {
     // Create a post by the self
     const newPost = await prisma.post.create({
       data: {
@@ -199,7 +206,7 @@ describe('Posts API', () => {
     expect(response.body.message).toBe('Post deleted successfully');
   });
 
-  it('should return 400 if postId is missing', async () => {
+  it('del - should return 400 if postId is missing', async () => {
     const response = await request(app)
       .delete('/posts')
       .set('Authorization', `Bearer ${token}`)
@@ -209,7 +216,7 @@ describe('Posts API', () => {
     expect(response.body.message).toBe('PostId are required');
   });
 
-  it('should return 404 if post is not found', async () => {
+  it('del - should return 404 if post is not found', async () => {
     const response = await request(app)
       .delete('/posts')
       .set('Authorization', `Bearer ${token}`)
@@ -219,7 +226,7 @@ describe('Posts API', () => {
     expect(response.body.message).toBe('Post not found');
   });
 
-  it('should return 403 if user is not the author', async () => {
+  it('del - should return 403 if user is not the author', async () => {
     // Create a post by the self
     const newPost = await prisma.post.create({
       data: {

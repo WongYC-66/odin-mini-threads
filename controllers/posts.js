@@ -23,7 +23,7 @@ exports.get_post = asyncHandler(async (req, res) => {
         include: {
             author: true, // Include author details if needed
             likedBy: true, // Include users who liked the post if needed
-            commments: true, // Include comments if needed
+            comments: true, // Include comments if needed
         },
         orderBy: {
             timestamp: 'desc', // Order posts by timestamp in descending order
@@ -34,7 +34,7 @@ exports.get_post = asyncHandler(async (req, res) => {
     res.status(200).json({ posts });
 });
 
-// Create a new post
+// Create a new post (protected route)
 exports.create_post = asyncHandler(async (req, res) => {
     const { content } = req.body; // Extract content from request body
     const userId = Number(req.user.id); // Get the ID of the authenticated user
@@ -59,7 +59,7 @@ exports.create_post = asyncHandler(async (req, res) => {
     });
 });
 
-// Update a post
+// Update a post (protected route)
 exports.update_post = asyncHandler(async (req, res) => {
     const { content, postId } = req.body; // Extract content from request body
     const userId = Number(req.user.id); // Get the ID of the authenticated user
@@ -98,7 +98,7 @@ exports.update_post = asyncHandler(async (req, res) => {
 });
 
 
-// Delete a post
+// Delete a post (protected route)
 exports.delete_post = asyncHandler(async (req, res) => {
     const postId = Number(req.body.postId); // Extract content from request body
     const userId = Number(req.user.id); // Get the ID of the authenticated user
@@ -134,7 +134,7 @@ exports.delete_post = asyncHandler(async (req, res) => {
     });
 });
 
-// Like or unlike a post
+// Like or unlike a post (protected route)
 exports.like_unlike_post = asyncHandler(async (req, res) => {
     const postId = Number(req.body.postId); // Extract postId and like from request body
     const like = Boolean(req.body.like); // Extract postId and like from request body

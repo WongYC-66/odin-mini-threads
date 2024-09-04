@@ -14,7 +14,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), commentsContr
 router.put('/', passport.authenticate('jwt', { session: false }), commentsController.update_comment);
 
 // Route for delete post(protected)
-// router.delete('/', passport.authenticate('jwt', { session: false }), commentsController.delete_post);
+router.delete('/', passport.authenticate('jwt', { session: false }), commentsController.delete_comment);
 
 
 module.exports = router;

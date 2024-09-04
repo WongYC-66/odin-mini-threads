@@ -82,7 +82,7 @@ describe('Comments API', () => {
     expect(response.body.comment.authorId).toBe(testUserId);
   });
 
-  it('should return 400 if postId or content is missing', async () => {
+  it('create - should return 400 if postId or content is missing', async () => {
     const response = await request(app)
       .post('/comments')
       .set('Authorization', `Bearer ${token}`)
@@ -92,7 +92,7 @@ describe('Comments API', () => {
     expect(response.body.message).toBe('PostId and content are required');
   });
 
-  it('should return 401 if no token is provided/invalid token', async () => {
+  it('create - should return 401 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .post('/comments')
       .send({
@@ -103,7 +103,7 @@ describe('Comments API', () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it('should return 404 if post is not found', async () => {
+  it('create - should return 404 if post is not found', async () => {
     const response = await request(app)
       .post('/comments')
       .set('Authorization', `Bearer ${token}`)
@@ -146,7 +146,16 @@ describe('Comments API', () => {
     expect(response.body.comment[1].content).toBe('Another comment by dummy user');
   });
 
-  it('should update a comment successfully', async () => {
+  it('get - should return 401 if no token is provided or invalid', async () => {
+    const response = await request(app)
+      .get('/comments')
+      .set('Authorization', ``)
+      .send({ postId })
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('update - should update a comment successfully', async () => {
     //  Create a comment by self
     const commentResponse = await prisma.comment.create({
       data: {
@@ -169,7 +178,7 @@ describe('Comments API', () => {
     expect(response.body.comment.content).toBe("Updated comment content");
   });
 
-  it('should return 401 if no token is provided', async () => {
+  it('update - should return 401 if no token is provided', async () => {
     const response = await request(app)
       .put('/comments')
       .send({
@@ -180,7 +189,7 @@ describe('Comments API', () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it('should return 400 if commentId or content is missing', async () => {
+  it('update - should return 400 if commentId or content is missing', async () => {
     const response = await request(app)
       .put('/comments')
       .set('Authorization', `Bearer ${token}`)
@@ -190,7 +199,7 @@ describe('Comments API', () => {
     expect(response.body.message).toBe('CommentId and content are required');
   });
 
-  it('should return 403 if user tries to update another user\'s comment', async () => {
+  it('update - should return 403 if user tries to update another user\'s comment', async () => {
 
     //  Create a comment by self
     const commentResponse = await prisma.comment.create({
@@ -213,7 +222,7 @@ describe('Comments API', () => {
     expect(response.body.message).toBe('Forbidden: You are not allowed to update this comment');
   });
 
-  it('should return 404 if comment is not found', async () => {
+  it('update - should return 404 if comment is not found', async () => {
     const response = await request(app)
       .put('/comments')
       .set('Authorization', `Bearer ${token}`)
@@ -226,4 +235,83 @@ describe('Comments API', () => {
     expect(response.body.message).toBe('Comment not found');
   });
 
+  it('should delete a comment successfully', async () => {
+    //  Create a comment by self
+    const commentResponse = await prisma.comment.create({
+      data: {
+        content: 'An comment by test user, pending deletion',
+        authorId: testUserId,
+        postId
+      },
+    });
+
+    const response = await request(app)
+      .delete('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        commentId: commentResponse.id,
+      })
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Comment deleted successfully');
+
+    // Verify the comment is deleted
+    const deletedComment = await prisma.comment.findUnique({
+      where: { id: commentResponse.id }
+    });
+    expect(deletedComment).toBeNull();
+  });
+
+  it('del - should return 401 if no token is provided', async () => {
+    const response = await request(app)
+      .delete('/comments')
+      .send({
+        commentId: '1',
+      })
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('del - should return 400 if commentId is missing', async () => {
+    const response = await request(app)
+      .delete('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({})
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('CommentId is required');
+  });
+
+  it('del - should return 404 if comment is not found', async () => {
+    const response = await request(app)
+      .delete('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        commentId: 591999, // Non-existent comment ID
+      })
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('Comment not found');
+  });
+
+  it('del - should return 403 if user tries to delete another user\'s comment', async () => {
+    // Create another comment by dummy
+    const commentResponse = await prisma.comment.create({
+      data: {
+        content: 'An comment by dummy user pending deletion',
+        authorId: dummyUser1Id,
+        postId
+      },
+    });
+
+    const response = await request(app)
+      .delete('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        commentId: commentResponse.id,
+      })
+      .expect(403);
+
+    expect(response.body.message).toBe('Forbidden: You are not allowed to delete this comment');
+  });
 });

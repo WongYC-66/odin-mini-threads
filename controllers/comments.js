@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const asyncHandler = require('express-async-handler');
 
-// Get a comment by ID
+// Get a comment by ID (protected route)
 exports.get_comment = asyncHandler(async (req, res) => {
     const postId = Number(req.body.postId); // Extract commentId from query parameters
 
@@ -27,7 +27,7 @@ exports.get_comment = asyncHandler(async (req, res) => {
     });
 });
 
-// Create a new comment
+// Create a new comment (protected route)
 exports.create_comment = asyncHandler(async (req, res) => {
     const postId = Number(req.body.postId); // Extract postId and content from request body
     const { content } = req.body; // Extract postId and content from request body
@@ -63,7 +63,7 @@ exports.create_comment = asyncHandler(async (req, res) => {
     });
 });
 
-// Update a comment by ID
+// Update a comment by ID (protected route)
 exports.update_comment = asyncHandler(async (req, res) => {
     const commentId = Number(req.body.commentId); // Extract commentId from request body
     const newContent = req.body.content; // Extract new content from request body
@@ -102,4 +102,43 @@ exports.update_comment = asyncHandler(async (req, res) => {
         message: 'Comment updated successfully',
         comment: updatedComment
     });
+});
+
+// Delete a comment by ID (protected route)
+exports.delete_comment = asyncHandler(async (req, res) => {
+    const commentId = Number(req.body.commentId); // Extract commentId from request body
+    const userId = Number(req.user.id); // Extract the ID of the authenticated user
+
+    // Validate request data
+    if (!commentId) {
+        return res.status(400).json({ message: 'CommentId is required' });
+    }
+
+    // Retrieve the comment
+    const comment = await prisma.comment.findUnique({
+        where: { id: commentId },
+        include: {
+            author: true // Include the author data for authorization check
+        }
+    });
+
+    if (!comment) {
+        return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check if the authenticated user is the author of the comment
+    if (comment.author.id !== userId) {
+        return res.status(403).json({ message: 'Forbidden: You are not allowed to delete this comment' });
+    }
+
+    // Update the comment
+    await prisma.comment.delete({
+        where: { id: commentId },
+    });
+
+    // Send the response
+    res.status(200).json({
+        message: 'Comment deleted successfully',
+    });
+
 });
