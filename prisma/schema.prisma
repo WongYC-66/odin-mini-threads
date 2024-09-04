@@ -14,13 +14,14 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  username    String   @unique
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
   password    String
-  followedBy  User[]   @relation("UserFollows")
-  following   User[]   @relation("UserFollows")
+  followedBy  User[]    @relation("UserFollows")
+  following   User[]    @relation("UserFollows")
   posts       Post[]
-  postLiked   Post[]   @relation("PostLikes")
+  postLiked   Post[]    @relation("PostLikes")
+  comments    Comment[]
   userProfile Profile?
 }
 
@@ -31,7 +32,7 @@ model Post {
   author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int
   likedBy   User[]    @relation("PostLikes")
-  commments Comment[]
+  comments  Comment[]
 }
 
 model Comment {
@@ -40,6 +41,8 @@ model Comment {
   timestamp DateTime @default(now())
   Post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int
 }
 
 model Profile {

@@ -1,10 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
-
-const JWT_SECRET = process.env.JWT_SECRET;
 
 // get all posts (protected route)
 exports.get_post = asyncHandler(async (req, res) => {
