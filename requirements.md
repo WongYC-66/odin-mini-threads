@@ -6,12 +6,16 @@ The following requirements are a very global list of features your app should ha
 3. Users can send follow requests to other users.
 4. Users can create posts (begin with text only).
 5. Users can like posts.
+6. Users can comment on posts.
 
-6. Users can comment on posts. --todo ~~~~~~~~~~~~~~
+### FE
 7. Posts should always display the post content, author, comments, and likes.
 8. There should be an index page for posts, which shows all the recent posts from the current user and users they are following.
+
 9. Users can create a profile with a profile picture. Depending on how you handle authentication, for example via passport-github2, you may be able to use their account’s existing profile picture. If this isn’t the case you can use Gravatar to generate them.
 10. A user’s profile page should contain their profile information, profile photo, and posts.
+
+### FE
 11. There should be an index page for users, which shows all users and buttons for sending follow requests to users the user is not already following or have a pending request.
 12. Deploy your app to a hosting provider of your choice!
 

@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "serverstart": "DEBUG=odin-odin-book:* npm run dev",
-    "resetDB": "npx prisma migrate reset -f && node ./tests/populateDB.js",
+    "resetDB": "npx prisma migrate reset -f && node ./tests/resetDB.js",
     "test": "jest --verbose"
   },
   "dependencies": {

@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+const passport = require('passport')
+const profilesController = require('../controllers/profiles.js');
+
+// Route GET profiles of all user.(protected)
+router.get('/', passport.authenticate('jwt', { session: false }), profilesController.get_profiles);
 
 module.exports = router;
