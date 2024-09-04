@@ -116,6 +116,114 @@ describe('Comments API', () => {
     expect(response.body.message).toBe('Post not found');
   });
 
+  it('should retrieve comments successfully', async () => {
+    //  Create 2 comments by self
+    await prisma.comment.create({
+      data: {
+        content: 'Another comment by dummy user',
+        authorId: dummyUser1Id,
+        postId
+      },
+    });
 
+    await prisma.comment.create({
+      data: {
+        content: 'Lastest comment by test user',
+        authorId: testUserId,
+        postId
+      },
+    });
+    const response = await request(app)
+      .get('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ postId })
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Comment retrieved successfully');
+    expect(response.body.comment).toBeInstanceOf(Array);
+
+    expect(response.body.comment[0].content).toBe('Lastest comment by test user');
+    expect(response.body.comment[1].content).toBe('Another comment by dummy user');
+  });
+
+  it('should update a comment successfully', async () => {
+    //  Create a comment by self
+    const commentResponse = await prisma.comment.create({
+      data: {
+        content: 'Original comment content by dummy user',
+        authorId: dummyUser1Id,
+        postId
+      },
+    });
+    const response = await request(app)
+      .put('/comments')
+      .set('Authorization', `Bearer ${token2}`)
+      .send({
+        commentId: commentResponse.id,
+        content: 'Updated comment content',
+      })
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.message).toBe('Comment updated successfully');
+    expect(response.body.comment.id).toBe(commentResponse.id);
+    expect(response.body.comment.content).toBe("Updated comment content");
+  });
+
+  it('should return 401 if no token is provided', async () => {
+    const response = await request(app)
+      .put('/comments')
+      .send({
+        commentId: '1',
+        content: 'Updated comment content',
+      })
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  it('should return 400 if commentId or content is missing', async () => {
+    const response = await request(app)
+      .put('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ content: 'Updated comment content' })
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('CommentId and content are required');
+  });
+
+  it('should return 403 if user tries to update another user\'s comment', async () => {
+
+    //  Create a comment by self
+    const commentResponse = await prisma.comment.create({
+      data: {
+        content: 'Original comment content by dummy user',
+        authorId: dummyUser1Id,
+        postId
+      },
+    });
+
+    const response = await request(app)
+      .put('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        commentId: commentResponse.id,
+        content: 'Trying to update someone else\'s comment',
+      })
+
+    expect(response.statusCode).toBe(403);
+    expect(response.body.message).toBe('Forbidden: You are not allowed to update this comment');
+  });
+
+  it('should return 404 if comment is not found', async () => {
+    const response = await request(app)
+      .put('/comments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        commentId: 5913999, // Non-existent comment ID
+        content: 'This is an updated comment content',
+      })
+
+    expect(response.statusCode).toBe(404);
+    expect(response.body.message).toBe('Comment not found');
+  });
 
 });
