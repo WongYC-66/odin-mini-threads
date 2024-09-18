@@ -9,6 +9,16 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // Sign-up controller
 exports.sign_up_post = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
+    
+     // Check if the username is already taken
+    const existingUser = await prisma.user.findUnique({
+        where: { username },
+    });
+    
+    if (existingUser) {
+        return res.status(400).json({ error: 'Username is already taken' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
         data: {
