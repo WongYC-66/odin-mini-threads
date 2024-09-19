@@ -84,7 +84,7 @@ describe('Posts API', () => {
       .send({});
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('Content is required');
+    expect(response.body.error).toBe('Content is required');
   });
 
   it('create - should return 401 if no token is provided/invalid token', async () => {
@@ -157,7 +157,7 @@ describe('Posts API', () => {
       .send({ content: 'Updated content' }); // Missing postId
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('Content and postId are required');
+    expect(response.body.error).toBe('Content and postId are required');
   });
 
   it('update - should return 404 if post is not found', async () => {
@@ -167,7 +167,7 @@ describe('Posts API', () => {
       .send({ content: 'Updated content', postId: 752349 }); // Non-existent postId
 
     expect(response.statusCode).toBe(404);
-    expect(response.body.message).toBe('Post not found');
+    expect(response.body.error).toBe('Post not found');
   });
 
   it('update - should return 403 if user is not the author', async () => {
@@ -185,7 +185,7 @@ describe('Posts API', () => {
       .send({ content: 'Malicious update', postId: newPost.id });
 
     expect(response.statusCode).toBe(403);
-    expect(response.body.message).toBe('You are not authorized to update this post');
+    expect(response.body.error).toBe('You are not authorized to update this post');
   });
 
   it('should delete a post successfully', async () => {
@@ -213,7 +213,7 @@ describe('Posts API', () => {
       .send({}); // Missing postId
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('PostId are required');
+    expect(response.body.error).toBe('PostId are required');
   });
 
   it('del - should return 404 if post is not found', async () => {
@@ -223,7 +223,7 @@ describe('Posts API', () => {
       .send({ postId: "123456" });
 
     expect(response.statusCode).toBe(404);
-    expect(response.body.message).toBe('Post not found');
+    expect(response.body.error).toBe('Post not found');
   });
 
   it('del - should return 403 if user is not the author', async () => {
@@ -241,7 +241,7 @@ describe('Posts API', () => {
       .send({ postId: newPost.id });
 
     expect(response.statusCode).toBe(403);
-    expect(response.body.message).toBe('You are not authorized to delete this post');
+    expect(response.body.error).toBe('You are not authorized to delete this post');
   });
 
   it('should like a post successfully', async () => {
@@ -280,7 +280,7 @@ describe('Posts API', () => {
       .send({ postId: newPost.id, like: true });
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('Post already liked');
+    expect(response.body.error).toBe('Post already liked');
   });
 
   it('should unlike a post successfully', async () => {
@@ -319,7 +319,7 @@ describe('Posts API', () => {
       .send({ postId: newPost.id, like: false });
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('Post not liked by this user');
+    expect(response.body.error).toBe('Post not liked by this user');
   });
 
 

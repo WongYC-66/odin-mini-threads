@@ -22,14 +22,41 @@ exports.get_post = asyncHandler(async (req, res) => {
             authorId: { in: followedUserIds }, // Filter posts where the author is in the list of followed users
         },
         include: {
-            author: true, // Include author details if needed
-            likedBy: true, // Include users who liked the post if needed
-            comments: true, // Include comments if needed
+            author: {
+                select: {
+                    id: true,        // Include author ID
+                    username: true,      // Include author name
+                    // Do not select password or any other sensitive fields
+                },
+            },
+            likedBy: {
+                select: {
+                    id: true,       // Include user ID
+                    username: true,     // Include user name (or other fields you need)
+                    // Exclude sensitive fields if necessary
+                },
+            },
+            comments: {
+                select: {
+                    id: true,       // Include comment ID
+                    content: true,  // Include comment content
+                    timestamp: true,
+                    author: {
+                        select: {
+                            id: true,
+                            username: true,
+                            // Exclude sensitive fields from comment authors
+                        },
+                    },
+                },
+            },
         },
         orderBy: {
             timestamp: 'desc', // Order posts by timestamp in descending order
         },
     });
+
+    // filter out
 
     // Send the response
     res.status(200).json({ posts });
@@ -42,7 +69,7 @@ exports.create_post = asyncHandler(async (req, res) => {
 
     // Validate request data
     if (!content) {
-        return res.status(400).json({ message: 'Content is required' });
+        return res.status(400).json({ error: 'Content is required' });
     }
 
     // Create a new post
@@ -67,7 +94,7 @@ exports.update_post = asyncHandler(async (req, res) => {
 
     // Validate request data
     if (!content || !postId) {
-        return res.status(400).json({ message: 'Content and postId are required' });
+        return res.status(400).json({ error: 'Content and postId are required' });
     }
 
     // Fetch the existing post
@@ -77,12 +104,12 @@ exports.update_post = asyncHandler(async (req, res) => {
 
     // Check if the post exists
     if (!post) {
-        return res.status(404).json({ message: 'Post not found' });
+        return res.status(404).json({ error: 'Post not found' });
     }
 
     // Check if the authenticated user is the author of the post
     if (post.authorId !== userId) {
-        return res.status(403).json({ message: 'You are not authorized to update this post' });
+        return res.status(403).json({ error: 'You are not authorized to update this post' });
     }
 
     // Update the post
@@ -106,7 +133,7 @@ exports.delete_post = asyncHandler(async (req, res) => {
 
     // Validate request data
     if (!postId) {
-        return res.status(400).json({ message: 'PostId are required' });
+        return res.status(400).json({ error: 'PostId are required' });
     }
 
     // Fetch the existing post
@@ -116,12 +143,12 @@ exports.delete_post = asyncHandler(async (req, res) => {
 
     // Check if the post exists
     if (!post) {
-        return res.status(404).json({ message: 'Post not found' });
+        return res.status(404).json({ error: 'Post not found' });
     }
 
     // Check if the authenticated user is the author of the post
     if (post.authorId !== userId) {
-        return res.status(403).json({ message: 'You are not authorized to delete this post' });
+        return res.status(403).json({ error: 'You are not authorized to delete this post' });
     }
 
     // Delete the post
@@ -143,7 +170,7 @@ exports.like_unlike_post = asyncHandler(async (req, res) => {
 
     // Validate request data
     if (!postId || req.body.like === undefined) {
-        return res.status(400).json({ message: 'PostId and like status are required' });
+        return res.status(400).json({ error: 'PostId and like status are required' });
     }
 
     // Check if the post exists
@@ -153,7 +180,7 @@ exports.like_unlike_post = asyncHandler(async (req, res) => {
     });
 
     if (!post) {
-        return res.status(404).json({ message: 'Post not found' });
+        return res.status(404).json({ error: 'Post not found' });
     }
 
     const alreadyLiked = post.likedBy.some(user => user.id === userId);
@@ -161,7 +188,7 @@ exports.like_unlike_post = asyncHandler(async (req, res) => {
     if (like) {
         // Like the post
         if (alreadyLiked) {
-            return res.status(400).json({ message: 'Post already liked' });
+            return res.status(400).json({ error: 'Post already liked' });
         }
 
         await prisma.post.update({
@@ -177,7 +204,7 @@ exports.like_unlike_post = asyncHandler(async (req, res) => {
     } else {
         // Unlike the post
         if (!alreadyLiked) {
-            return res.status(400).json({ message: 'Post not liked by this user' });
+            return res.status(400).json({ error: 'Post not liked by this user' });
         }
 
         await prisma.post.update({

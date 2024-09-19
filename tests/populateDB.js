@@ -26,7 +26,7 @@ const populateDB = async () => {
                 },
                 posts: {
                     create: {
-                        content: faker.lorem.sentences({ min: 1, max: 3 }) + ". This is a fake profile, generated from faker"
+                        content: faker.lorem.sentences({ min: 1, max: 3 }) + ". This is a fake posts, generated from faker"
                     }
                 },
             },
