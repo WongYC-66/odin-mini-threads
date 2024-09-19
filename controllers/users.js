@@ -55,6 +55,7 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
     res.json({
         id: user.id,
+        username: user.username,
         token: `${token}`,
     });
 });
@@ -65,17 +66,18 @@ exports.login_post = asyncHandler(async (req, res) => {
     const user = await prisma.user.findUnique({
         where: { username },
     });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
         const payload = { id: user.id };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
         res.json({
             id: user.id,
+            username: user.username,
             token: `${token}`,
         });
     } else {
-        res.status(401).json({ message: 'Invalid credentials' });
+        res.status(401).json({ error: 'Invalid credentials' });
     }
 });
 
@@ -89,7 +91,7 @@ exports.follow_post = asyncHandler(async (req, res) => {
     });
 
     if (!userToFollow) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
     }
 
     await prisma.user.update({
@@ -110,7 +112,7 @@ exports.unfollow_post = asyncHandler(async (req, res) => {
     const unfollowId = Number(req.body.unfollowId); // ID of the user to unfollow
 
     if (userId === unfollowId) {
-        return res.status(400).json({ message: 'Cannot unfollow yourself' });
+        return res.status(400).json({ error: 'Cannot unfollow yourself' });
     }
 
     const userToUnfollow = await prisma.user.findUnique({
@@ -118,7 +120,7 @@ exports.unfollow_post = asyncHandler(async (req, res) => {
     });
 
     if (!userToUnfollow) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ error: 'User not found' });
     }
 
     await prisma.user.update({

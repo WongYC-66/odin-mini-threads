@@ -4,6 +4,7 @@ const asyncHandler = require('express-async-handler');
 
 // get all posts (protected route)
 exports.get_post = asyncHandler(async (req, res) => {
+    console.log("getting posts")
     const userId = Number(req.user.id); // Get the ID of the authenticated user
 
     // Retrieve the list of users that the authenticated user is following

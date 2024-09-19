@@ -31,7 +31,7 @@ describe('Users API', () => {
     // create dummy user
     await request(app)
       .post('/users/sign-up')
-      .send({ username: 'testuser', password: 'testpassword' });
+      .send({ username: 'testuser', password: 'testpassword', confirmPassword: 'testpassword' });
 
     const response = await request(app)
       .post('/users/login')
@@ -42,11 +42,12 @@ describe('Users API', () => {
 
     const dummyResponse1 = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'dummyuser1', password: 'dummypassword' });
+      .send({ username: 'dummyuser1', password: 'dummypassword', confirmPassword: 'dummypassword' });
+
 
     const dummyResponse2 = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'dummyuser2', password: 'dummypassword' });
+      .send({ username: 'dummyuser2', password: 'dummypassword', confirmPassword: 'dummypassword' });
 
     dummyUser1Id = dummyResponse1.body.id
     dummyUser2Id = dummyResponse2.body.id

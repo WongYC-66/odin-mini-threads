@@ -28,7 +28,7 @@ describe('Users API', () => {
     // create dummy user
     await request(app)
       .post('/users/sign-up')
-      .send({ username: 'testuser', password: 'testpassword' });
+      .send({ username: 'testuser', password: 'testpassword', confirmPassword: 'testpassword' });
 
     const response = await request(app)
       .post('/users/login')
@@ -39,11 +39,11 @@ describe('Users API', () => {
 
     const dummyResponse1 = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'dummyuser1', password: 'dummypassword' });
+      .send({ username: 'dummyuser1', password: 'dummypassword', confirmPassword: 'dummypassword' });
 
     const dummyResponse2 = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'dummyuser2', password: 'dummypassword' });
+      .send({ username: 'dummyuser2', password: 'dummypassword', confirmPassword: 'dummypassword' });
 
     dummyUser1Id = dummyResponse1.body.id
     dummyUser2Id = dummyResponse2.body.id
@@ -63,7 +63,7 @@ describe('Users API', () => {
   it('should sign up a new user', async () => {
     const response = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'newuser', password: 'newpassword' });
+      .send({ username: 'newuser', password: 'newpassword', confirmPassword: 'newpassword' });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.token).toBeDefined();
@@ -108,7 +108,7 @@ describe('Users API', () => {
       .send({ followId: '152232' });
 
     expect(response.statusCode).toBe(404);
-    expect(response.body.message).toBe('User not found');
+    expect(response.body.error).toBe('User not found');
   });
 
   it('should unfollow an existing user', async () => {
@@ -136,7 +136,7 @@ describe('Users API', () => {
       .send({ unfollowId: testUserId }); // Assuming the ID is 1 for the same user
 
     expect(response.statusCode).toBe(400);
-    expect(response.body.message).toBe('Cannot unfollow yourself');
+    expect(response.body.error).toBe('Cannot unfollow yourself');
   });
 
   it('should return 404 for non-existent user to unfollow', async () => {
@@ -146,7 +146,7 @@ describe('Users API', () => {
       .send({ unfollowId: '99349' }); // Non-existent user ID
 
     expect(response.statusCode).toBe(404);
-    expect(response.body.message).toBe('User not found');
+    expect(response.body.error).toBe('User not found');
   });
 
 });

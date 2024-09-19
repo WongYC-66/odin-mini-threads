@@ -29,7 +29,7 @@ describe('Comments API', () => {
     // Create a test user and get a token
     const signUpResponse = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'testuser', password: 'testpassword' });
+      .send({ username: 'testuser', password: 'testpassword', confirmPassword: 'testpassword' });
 
     const loginResponse = await request(app)
       .post('/users/login')
@@ -41,7 +41,7 @@ describe('Comments API', () => {
     // Create dummyUser and a new post by dummyUser
     const dummyUser1Response = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'dummyUser1', password: 'password' });
+      .send({ username: 'dummyuser1', password: 'dummypassword', confirmPassword: 'dummypassword' });
 
     token2 = dummyUser1Response.body.token
     dummyUser1Id = dummyUser1Response.body.id;

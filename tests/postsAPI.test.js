@@ -28,7 +28,7 @@ describe('Posts API', () => {
     // Create a test user and get a token
     const signUpResponse = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'testuser', password: 'testpassword' });
+      .send({ username: 'testuser', password: 'testpassword', confirmPassword: 'testpassword' });
 
     const loginResponse = await request(app)
       .post('/users/login')
@@ -40,7 +40,7 @@ describe('Posts API', () => {
     // Create and follow another user
     const dummyUser1Response = await request(app)
       .post('/users/sign-up')
-      .send({ username: 'dummyUser1', password: 'password' });
+      .send({ username: 'dummyuser1', password: 'dummypassword', confirmPassword: 'dummypassword' });
 
     dummyUser1Id = dummyUser1Response.body.id;
     token2 = dummyUser1Response.body.token
