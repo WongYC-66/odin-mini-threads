@@ -7,7 +7,17 @@ exports.get_profiles = asyncHandler(async (req, res) => {
     // Fetch all profiles from the database
     const profiles = await prisma.profile.findMany({
         include: {
-            user: true // Include user data associated with the profile if needed
+            user: {
+                select: {
+                    id: true,
+                    username: true,
+                    _count: {
+                        select: {
+                            followedBy: true, // Get the count of users following this user
+                        },
+                    },
+                },
+            }
         },
         orderBy: { firstName: 'asc' },
     });
@@ -32,7 +42,7 @@ exports.update_profile = asyncHandler(async (req, res) => {
             lastName,
             bio,
             photoURL
-        }
+        },
     });
 
     // Send the response

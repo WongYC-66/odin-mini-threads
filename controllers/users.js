@@ -52,7 +52,7 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
 
     // Automatically log in user after registration
     const payload = { id: user.id };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
     res.json({
         id: user.id,
         username: user.username,
@@ -70,7 +70,7 @@ exports.login_post = asyncHandler(async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
         const payload = { id: user.id };
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
         res.json({
             id: user.id,
             username: user.username,
