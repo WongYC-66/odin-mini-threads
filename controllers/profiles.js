@@ -23,17 +23,18 @@ exports.get_profiles = asyncHandler(async (req, res) => {
     });
 
     // Also sent user curren followings username
-    const { following: myFollowings } = await prisma.user.findUnique({
+    let { following: myFollowings } = await prisma.user.findUnique({
         where: { id: Number(req.user.id) },
         select: {
             following: {
                 select: {
-                    id: true,
                     username: true,
                 },
             },
         }
     });
+
+    myFollowings = myFollowings.map(({username}) => username) 
 
     // Send the response
     res.status(200).json({
