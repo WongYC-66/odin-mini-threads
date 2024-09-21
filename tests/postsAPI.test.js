@@ -131,6 +131,22 @@ describe('Posts API', () => {
     expect(response.statusCode).toBe(401);
   });
 
+  it('should get one post by post id', async () => {
+
+    const response = await request(app)
+      .get('/posts/1')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('get - should return 401 if no token is provided/invalid token', async () => {
+    const response = await request(app)
+      .get('/posts/1')
+
+    expect(response.statusCode).toBe(401);
+  });
+
   it('should update a post successfully', async () => {
     // Create a post by the self
     const newPost = await prisma.post.create({
