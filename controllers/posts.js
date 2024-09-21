@@ -121,6 +121,11 @@ exports.get_one_post = asyncHandler(async (req, res) => {
                         select: {
                             id: true,
                             username: true,
+                            userProfile: {
+                                select: {
+                                    photoURL: true
+                                }
+                            }
                             // Exclude sensitive fields from comment authors
                         },
                     },
