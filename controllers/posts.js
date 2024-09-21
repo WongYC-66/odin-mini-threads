@@ -26,14 +26,89 @@ exports.get_post = asyncHandler(async (req, res) => {
                 select: {
                     id: true,        // Include author ID
                     username: true,      // Include author name
+                    userProfile: {
+                        select: {
+                            photoURL: true
+                        }
+                    }
                     // Do not select password or any other sensitive fields
                 },
             },
-            likedBy: {
+            _count: {
                 select: {
-                    id: true,       // Include user ID
-                    username: true,     // Include user name (or other fields you need)
-                    // Exclude sensitive fields if necessary
+                    likedBy: true,   // Count of likedBy users
+                    comments: true,  // Count of comments
+                },
+            },
+            // likedBy: {
+            //     select: {
+            //         id: true,       // Include user ID
+            //         username: true,     // Include user name (or other fields you need)
+            //         // Exclude sensitive fields if necessary
+            //     },
+            // },
+            // comments: {
+            //     select: {
+            //         id: true,       // Include comment ID
+            //         content: true,  // Include comment content
+            //         timestamp: true,
+            //         author: {
+            //             select: {
+            //                 id: true,
+            //                 username: true,
+            //                 // Exclude sensitive fields from comment authors
+            //             },
+            //         },
+            //     },
+            // },
+        },
+        orderBy: {
+            timestamp: 'desc', // Order posts by timestamp in descending order
+        },
+    });
+
+    // get list of likedPosts of this user
+    let { postLiked } = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            postLiked: {
+                select: { id: true },
+            },
+        }
+    });
+    postLiked = postLiked.map(({id}) => id)
+
+    // Send the response
+    res.status(200).json({ posts, postLiked });
+});
+
+// get one post + comments (protected route)
+exports.get_one_post = asyncHandler(async (req, res) => {
+    console.log("getting one post")
+    const {postId} = req.params;
+
+    // Fetch posts from the users being followed
+    const post = await prisma.post.findUnique({
+        where: {
+            id: Number(postId), // Filter posts where the author is in the list of followed users
+        },
+        include: {
+            author: {
+                select: {
+                    id: true,        // Include author ID
+                    username: true,      // Include author name
+                    userProfile: {
+                        select: {
+                            photoURL: true
+                        }
+                    }
+                    // Do not select password or any other sensitive fields
+                },
+            },
+            _count: {
+                select: {
+                    likedBy: true,   // Count of likedBy users
+                    comments: true,  // Count of comments
                 },
             },
             comments: {
@@ -51,15 +126,10 @@ exports.get_post = asyncHandler(async (req, res) => {
                 },
             },
         },
-        orderBy: {
-            timestamp: 'desc', // Order posts by timestamp in descending order
-        },
     });
 
-    // filter out
-
     // Send the response
-    res.status(200).json({ posts });
+    res.status(200).json({ post });
 });
 
 // Create a new post (protected route)

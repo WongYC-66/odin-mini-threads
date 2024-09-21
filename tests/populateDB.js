@@ -19,14 +19,14 @@ const populateDB = async () => {
                 userProfile: {
                     create: {
                         bio: `${username}'s bio,  ${faker.person.bio()}`,
-                        photoURL: "no photo yet",
+                        photoURL: "",
                         firstName: faker.person.firstName(),  // random name
                         lastName: faker.person.lastName(),  // random name
                     }
                 },
                 posts: {
                     create: {
-                        content: faker.lorem.sentences({ min: 1, max: 3 }) + ". This is a fake posts, generated from faker"
+                        content: faker.lorem.sentences({ min: 1, max: 3 }) + ". This is a fake posts, generated from faker",
                     }
                 },
             },
