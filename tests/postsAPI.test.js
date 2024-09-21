@@ -132,6 +132,13 @@ describe('Posts API', () => {
   });
 
   it('should get one post by post id', async () => {
+    // Create a post by the self
+    const newPost = await prisma.post.create({
+      data: {
+        content: 'dummy post',
+        authorId: testUserId,
+      },
+    });
 
     const response = await request(app)
       .get('/posts/1')

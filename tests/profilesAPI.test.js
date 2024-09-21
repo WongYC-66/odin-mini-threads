@@ -103,6 +103,21 @@ describe('Users API', () => {
     expect(response.statusCode).toBe(401);
   });
 
+  it('get - profile/:userId should retrieve one profile successfully', async () => {
+    const response = await request(app)
+      .get(`/profiles/${testUserId}`)
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('get - profile/:userId should return 401 if no token is provided/invalid token', async () => {
+    const response = await request(app)
+    .get(`/profiles/${testUserId}`)
+
+    expect(response.statusCode).toBe(401);
+  });
+
 
 
 });

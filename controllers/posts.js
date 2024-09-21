@@ -76,7 +76,7 @@ exports.get_post = asyncHandler(async (req, res) => {
             },
         }
     });
-    postLiked = postLiked.map(({id}) => id)
+    postLiked = postLiked.map(({ id }) => id)
 
     // Send the response
     res.status(200).json({ posts, postLiked });
@@ -86,7 +86,7 @@ exports.get_post = asyncHandler(async (req, res) => {
 exports.get_one_post = asyncHandler(async (req, res) => {
     console.log("getting one post")
     const userId = Number(req.user.id)
-    const {postId} = req.params;
+    const { postId } = req.params;
 
     // Fetch posts from the users being followed
     const post = await prisma.post.findUnique({
@@ -142,7 +142,8 @@ exports.get_one_post = asyncHandler(async (req, res) => {
             },
         }
     });
-    post.isLiked = postLiked.some(({id}) => id === post.id)
+    if (post)
+        post.isLiked = postLiked.some(({ id }) => id === post.id)
 
     // Send the response
     res.status(200).json({ post });
