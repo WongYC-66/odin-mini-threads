@@ -19,7 +19,7 @@ const populateDB = async () => {
                 userProfile: {
                     create: {
                         bio: `${username}'s bio,  ${faker.person.bio()}`,
-                        photoURL: "",
+                        photoURL: "/user2.png",
                         firstName: faker.person.firstName(),  // random name
                         lastName: faker.person.lastName(),  // random name
                     }

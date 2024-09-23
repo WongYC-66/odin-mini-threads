@@ -46,25 +46,20 @@ exports.get_profiles = asyncHandler(async (req, res) => {
 
 // Get one user profile by userId (protected route)
 exports.get_one_profile = asyncHandler(async (req, res) => {
-    const { userId } = req.params
-    // Fetch all profiles from the database
-    const profile = await prisma.profile.findUnique({
-        where: { userId: Number(userId) },
-        include: {
-            user: {
+    const { username } = req.params
+    // Fetch one profile from the database
+    const profile = await prisma.user.findUnique({
+        where: { username: username },
+        select: {
+            id: true,
+            username: true,
+            _count: {
                 select: {
-                    id: true,
-                    username: true,
-                    _count: {
-                        select: {
-                            followedBy: true,   // Get the count of users following this user
-                            following: true,    // Get the count of users this user is following
-                            posts: true,        // Get the count of posts this user has made
-                            comments: true,     // Get the count of comments this user has made
-                        },
-                    },
-                }
-            }
+                    followedBy: true,   // Get the count of users following this user
+                    following: true,    // Get the count of users this user is following
+                },
+            },
+            userProfile: true,
         },
     });
 

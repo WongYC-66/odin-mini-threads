@@ -19,7 +19,7 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
     const existingUser = await prisma.user.findUnique({
         where: { username },
     });
-    
+
     if (existingUser) {
         return res.status(400).json({ error: 'Username is already taken' });
     }
@@ -44,7 +44,7 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
                     firstName: '',
                     lastName: '',
                     bio: 'the bio is empty, write something here ...',
-                    photoURL: '',
+                    photoURL: '/user2.png',
                 }
             }
         }
@@ -57,6 +57,7 @@ exports.sign_up_post = asyncHandler(async (req, res) => {
         id: user.id,
         username: user.username,
         token: `${token}`,
+        photoURL: '/user2.png'
     });
 });
 
@@ -65,16 +66,19 @@ exports.login_post = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
     const user = await prisma.user.findUnique({
         where: { username },
+        include: { userProfile: true },
     });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
         const payload = { id: user.id };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+        console.log(user)
         res.json({
             id: user.id,
             username: user.username,
             token: `${token}`,
+            photoURL: user.userProfile.photoURL
         });
     } else {
         res.status(401).json({ error: 'Invalid credentials' });
