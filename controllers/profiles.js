@@ -46,6 +46,7 @@ exports.get_profiles = asyncHandler(async (req, res) => {
 
 // Get one user profile by username (protected route)
 exports.get_one_profile = asyncHandler(async (req, res) => {
+    const userId = Number(req.user.id)
     const { username } = req.params
     // Fetch one profile from the database
     const profile = await prisma.user.findUnique({
@@ -62,11 +63,26 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
             userProfile: true,
         },
     });
-    if(!profile){
+
+    if (!profile) {
         return res.status(404).json({
             error: 'Username not found',
         });
     }
+
+    // give attr of is_followed
+    const {following} = await prisma.user.findUnique({
+        where: { id: userId },
+        select:{
+            following:{
+                select:{
+                    id: true
+                }
+            }
+        }
+    })
+    profile.is_followed = following.some(({id}) => id == profile.id)
+
     // Send the response
     res.status(200).json({
         message: 'Profiles retrieved successfully',
