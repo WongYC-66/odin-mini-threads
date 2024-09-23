@@ -88,6 +88,17 @@ exports.login_post = asyncHandler(async (req, res) => {
 // Github success login controller 
 exports.auth_github_success = asyncHandler(async (req, res) => {
     // Successful authentication, send jwtoken in query form
+    
+    // Automatically follow user self
+     await prisma.user.update({
+        where: { id: Number(req.user.id) },
+        data: {
+            following: {
+                connect: { id: Number(req.user.id) },
+            },
+        }
+    })
+
     const payload = { id: req.user.id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
 
