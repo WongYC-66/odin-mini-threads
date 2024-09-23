@@ -85,6 +85,26 @@ exports.login_post = asyncHandler(async (req, res) => {
     }
 });
 
+// Github success login controller 
+exports.auth_github_success = asyncHandler(async (req, res) => {
+    // Successful authentication, send jwtoken in query form
+    const payload = { id: req.user.id };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+
+    const params = new URLSearchParams({
+        id: req.user.id,
+        username: req.user.username,
+        token: `${token}`,
+        photoURL: req.user.userProfile.photoURL,
+    });
+
+    // Generate the complete URL for redirection
+    const redirectUrl = `${process.env.FE_DOMAIN}/sign-in?${params.toString()}`;
+
+    // Redirect FE to the URL to sign-in
+    return res.redirect(redirectUrl);
+});
+
 // Follow controller (protected route)
 exports.follow_post = asyncHandler(async (req, res) => {
     const userId = Number(req.user.id); // Get the ID of the authenticated user
