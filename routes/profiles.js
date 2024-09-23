@@ -7,7 +7,7 @@ const profilesController = require('../controllers/profiles.js');
 // Route GET profiles of all user.(protected)
 router.get('/', passport.authenticate('jwt', { session: false }), profilesController.get_profiles);
 
-// Route GET one profile by userID.(protected)
+// Route GET one profile by username.(protected)
 router.get('/:username', passport.authenticate('jwt', { session: false }), profilesController.get_one_profile);
 
 

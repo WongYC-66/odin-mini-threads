@@ -73,7 +73,7 @@ exports.login_post = asyncHandler(async (req, res) => {
     if (isMatch) {
         const payload = { id: user.id };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
-        console.log(user)
+        // console.log(user)
         res.json({
             id: user.id,
             username: user.username,

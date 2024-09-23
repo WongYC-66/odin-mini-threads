@@ -103,21 +103,28 @@ describe('Users API', () => {
     expect(response.statusCode).toBe(401);
   });
 
-  it('get - profile/:userId should retrieve one profile successfully', async () => {
+  it('get - profile/:username should retrieve one profile successfully', async () => {
     const response = await request(app)
-      .get(`/profiles/${testUserId}`)
+      .get(`/profiles/testuser`)
       .set('Authorization', `Bearer ${token}`)
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('get - profile/:userId should return 401 if no token is provided/invalid token', async () => {
+  it('get - profile/:username should return 401 if no token is provided/invalid token', async () => {
     const response = await request(app)
-    .get(`/profiles/${testUserId}`)
+    .get(`/profiles/testuser`)
 
     expect(response.statusCode).toBe(401);
   });
 
+  it('get - profile/:username should return 404 if username not found', async () => {
+    const response = await request(app)
+    .get(`/profiles/testuser123123123123`)
+    .set('Authorization', `Bearer ${token}`)
+
+    expect(response.statusCode).toBe(404);
+  });
 
 
 });
