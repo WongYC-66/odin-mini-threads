@@ -174,11 +174,23 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
     });
     profile.replies = replies
 
+    // get list of likedPosts of this user
+    let { postLiked } = await prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+            postLiked: {
+                select: { id: true },
+            },
+        }
+    });
+    postLiked = postLiked.map(({ id }) => id)
+
 
     // Send the response
     res.status(200).json({
         message: 'Profiles retrieved successfully',
         profile,
+        postLiked,
     });
 });
 
