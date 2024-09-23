@@ -40,7 +40,7 @@ const populateDB = async () => {
     // follow self, like random post
 
     let postIdArr = await prisma.post.findMany()
-    postIdArr = postIdArr.map(post => post.id).sort((a,b) => Math.random() - 0.5)
+    postIdArr = postIdArr.map(post => post.id).sort((a, b) => Math.random() - 0.5)
 
     promiseArr = responseArr.map(user => {
         return prisma.user.update({
@@ -61,7 +61,34 @@ const populateDB = async () => {
 
     responseArr = await Promise.all(promiseArr)
 
-    // console.log(responseArr)
+    // create Guest user, follow everyone :)
+    const guestUser = await prisma.user.create({
+        data: {
+            username: "guest",
+            password: bcrypt.hashSync("guest", 10),
+            userProfile: {
+                create: {
+                    bio: `Guest's bio,  ${faker.person.bio()}`,
+                    photoURL: faker.image.avatarGitHub(),
+                    firstName: "Guest",
+                }
+            },
+        },
+    })
+
+    promiseArr = Array(11).fill().map((_, i) => i + 1).map(userId =>
+        prisma.user.update({
+            where: { id: guestUser.id },
+            data: {
+                following: {
+                    connect: { id: userId }
+                },
+            },
+        })
+    )
+
+    await Promise.all(promiseArr)
+
 }
 
 exports.main = async () => {
