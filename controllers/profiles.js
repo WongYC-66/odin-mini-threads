@@ -71,17 +71,109 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
     }
 
     // give attr of is_followed
-    const {following} = await prisma.user.findUnique({
+    const { following } = await prisma.user.findUnique({
         where: { id: userId },
-        select:{
-            following:{
-                select:{
+        select: {
+            following: {
+                select: {
                     id: true
                 }
             }
         }
     })
-    profile.is_followed = following.some(({id}) => id == profile.id)
+    profile.is_followed = following.some(({ id }) => id == profile.id)
+
+    // give attr of threads  i.e. posts
+    const threads = await prisma.post.findMany({
+        where: {
+            author: { 
+                username: username
+            }, 
+        },
+        select: {
+            id: true,
+            content: true,
+            timestamp: true,
+            author: {
+                select: {
+                    id: true,        // Include author ID
+                    username: true,      // Include author name
+                    userProfile: {
+                        select: {
+                            photoURL: true
+                        }
+                    }
+                    // Do not select password or any other sensitive fields
+                },
+            },
+            _count: {
+                select: {
+                    likedBy: true,   // Count of likedBy users
+                    comments: true,  // Count of comments
+                },
+            },
+        },
+        orderBy: {
+            timestamp: 'desc', // Order posts by timestamp in descending order
+        },
+    });
+    profile.threads = threads
+
+    // give attr of threads  i.e. posts
+    const replies = await prisma.comment.findMany({
+        where: {
+            author: { 
+                username: username
+            }, 
+        },
+        select: {
+            id: true,
+            content: true,
+            timestamp: true,
+            author: {
+                select: {
+                    id: true,        // Include author ID
+                    username: true,      // Include author name
+                    userProfile: {
+                        select: {
+                            photoURL: true
+                        }
+                    }
+                    // Do not select password or any other sensitive fields
+                },
+            },
+            Post: {
+                select: {
+                    id: true,
+                    content: true,
+                    timestamp: true,
+                    _count: {
+                        select: {
+                            likedBy: true,   // Count of likedBy users
+                            comments: true,  // Count of comments
+                        },
+                    },
+                    author: {
+                        select: {
+                            id: true,        // Include author ID
+                            username: true,      // Include author name
+                            userProfile: {
+                                select: {
+                                    photoURL: true
+                                }
+                            }
+                            // Do not select password or any other sensitive fields
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            timestamp: 'desc', // Order posts by timestamp in descending order
+        },
+    });
+    profile.replies = replies
+
 
     // Send the response
     res.status(200).json({
