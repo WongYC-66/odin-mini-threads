@@ -18,7 +18,7 @@ const populateDB = async () => {
                 password: bcrypt.hashSync(username, 10),
                 userProfile: {
                     create: {
-                        bio: `${username}'s bio,  ${faker.person.bio()}`,
+                        bio: `${username}'s bio,  ${faker.person.bio()}, this is auto-generated bio by faker`,
                         // photoURL: "/user2.png",
                         photoURL: faker.image.avatarGitHub(),
                         firstName: faker.person.firstName(),  // random name
