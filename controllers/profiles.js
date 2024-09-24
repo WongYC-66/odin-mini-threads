@@ -1,6 +1,20 @@
+const asyncHandler = require('express-async-handler');
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const asyncHandler = require('express-async-handler');
+
+// supabase cloud
+const { createClient } = require("@supabase/supabase-js")
+// Create Supabase client
+const supabase = createClient(process.env.SUPABASE_PROJECT_URL, process.env.SUPABASE_API_KEY)
+
+const multer = require('multer')
+const upload = multer({ dest: './public/uploads/' })
+
+const path = require('path');
+const fs = require('fs');
+const stream = require('stream');
+const { decode } = require('base64-arraybuffer')
 
 // Get all user profiles (protected route)
 exports.get_profiles = asyncHandler(async (req, res) => {
@@ -86,9 +100,9 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
     // give attr of threads  i.e. posts
     const threads = await prisma.post.findMany({
         where: {
-            author: { 
+            author: {
                 username: username
-            }, 
+            },
         },
         select: {
             id: true,
@@ -122,9 +136,9 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
     // give attr of threads  i.e. posts
     const replies = await prisma.comment.findMany({
         where: {
-            author: { 
+            author: {
                 username: username
-            }, 
+            },
         },
         select: {
             id: true,
@@ -216,3 +230,63 @@ exports.update_profile = asyncHandler(async (req, res) => {
         profile: updatedProfile
     });
 });
+
+// Update photo user profile (protected route)
+exports.update_photo_profile = [
+    upload.single('avatar'),
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+
+    asyncHandler(async (req, res) => {
+        if (!req.file)
+            return res.status('500').json({
+                error: "file upload failed - no file uploaded"
+            })
+
+        const userId = Number(req.user.id)
+
+        const { data, error } = await uploadToDataBase(req.file, userId)
+
+        if(error){
+            // console.error(error)
+            return res.status('500').json({     // supabase error
+                error: "file upload failed - supabase error"
+            })
+        }
+        
+        const photoURL = `${process.env.SUPABASE_PROJECT_URL}/storage/v1/object/public/${data.fullPath}`
+
+        // delete uploaded file at backend
+        fs.unlinkSync(req.file.path);
+
+        // console.log(photoURL)
+        return res.status(201).json({
+            message: "uploaded",
+            photoURL : photoURL,
+        })
+    })
+];
+
+const uploadToDataBase = async (fileInfo, userId) => {
+    const { originalname, encoding, mimetype, destination, path, size } = fileInfo
+    // console.log(fileInfo)
+
+    // Read the file as a binary buffer
+    // Convert buffer to base64 string
+    const fileBuffer = fs.readFileSync(path);
+    const base64Data = fileBuffer.toString('base64');
+
+    // upload to supabase
+    const { data, error } = await supabase.storage
+        .from('everything')
+        .upload(
+            `${userId}/${originalname}`, // file destination in supabase
+            decode(base64Data),
+            { upsert: true, contentType: mimetype } // option
+        )
+    // upload = save to /10/logo.webp
+    // console.log({data})
+    // console.log({error})
+
+    return { data, error }
+}

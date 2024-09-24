@@ -10,9 +10,12 @@ router.get('/', authenticateJWT, profilesController.get_profiles);
 // Route GET one profile by username.(protected)
 router.get('/:username', authenticateJWT, profilesController.get_one_profile);
 
-
 // Route PUT profile one user.(protected)
 router.put('/', authenticateJWT, profilesController.update_profile);
+
+// Route POST update profile photo of one user.(protected)
+router.post('/update-photo', authenticateJWT, profilesController.update_photo_profile);
+
 
 
 module.exports = router;
