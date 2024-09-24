@@ -92,7 +92,7 @@ describe('Comments API', () => {
     expect(response.body.message).toBe('PostId and content are required');
   });
 
-  it('create - should return 401 if no token is provided/invalid token', async () => {
+  it('create - should return 302 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .post('/comments')
       .send({
@@ -100,7 +100,7 @@ describe('Comments API', () => {
         content: 'This is a test comment by test user',
       })
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('create - should return 404 if post is not found', async () => {
@@ -146,13 +146,13 @@ describe('Comments API', () => {
     expect(response.body.comment[1].content).toBe('Another comment by dummy user');
   });
 
-  it('get - should return 401 if no token is provided or invalid', async () => {
+  it('get - should return 302 if no token is provided or invalid', async () => {
     const response = await request(app)
       .get('/comments')
       .set('Authorization', ``)
       .send({ postId })
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('update - should update a comment successfully', async () => {
@@ -178,7 +178,7 @@ describe('Comments API', () => {
     expect(response.body.comment.content).toBe("Updated comment content");
   });
 
-  it('update - should return 401 if no token is provided', async () => {
+  it('update - should return 302 if no token is provided', async () => {
     const response = await request(app)
       .put('/comments')
       .send({
@@ -186,7 +186,7 @@ describe('Comments API', () => {
         content: 'Updated comment content',
       })
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('update - should return 400 if commentId or content is missing', async () => {
@@ -262,14 +262,14 @@ describe('Comments API', () => {
     expect(deletedComment).toBeNull();
   });
 
-  it('del - should return 401 if no token is provided', async () => {
+  it('del - should return 302 if no token is provided', async () => {
     const response = await request(app)
       .delete('/comments')
       .send({
         commentId: '1',
       })
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('del - should return 400 if commentId is missing', async () => {

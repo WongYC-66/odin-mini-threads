@@ -96,11 +96,11 @@ describe('Users API', () => {
     expect(response.body.profile.photoURL).toBe('updated.jpg');
   });
 
-  it('put - should return 401 if no token is provided/invalid token', async () => {
+  it('put - should return 302 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .put('/profiles')
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('get - profile/:username should retrieve one profile successfully', async () => {
@@ -111,11 +111,11 @@ describe('Users API', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('get - profile/:username should return 401 if no token is provided/invalid token', async () => {
+  it('get - profile/:username should return 302 if no token is provided/invalid token', async () => {
     const response = await request(app)
     .get(`/profiles/testuser`)
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('get - profile/:username should return 404 if username not found', async () => {

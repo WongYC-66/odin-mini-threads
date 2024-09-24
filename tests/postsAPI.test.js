@@ -87,12 +87,12 @@ describe('Posts API', () => {
     expect(response.body.error).toBe('Content is required');
   });
 
-  it('create - should return 401 if no token is provided/invalid token', async () => {
+  it('create - should return 302 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .post('/posts')
       .send({ content: 'This is a test post' });
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('should get posts from users the authenticated user is following', async () => {
@@ -124,11 +124,11 @@ describe('Posts API', () => {
 
   });
 
-  it('get - should return 401 if no token is provided/invalid token', async () => {
+  it('get - should return 302 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .get('/posts')
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('should get one post by post id', async () => {
@@ -147,11 +147,11 @@ describe('Posts API', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('get - should return 401 if no token is provided/invalid token', async () => {
+  it('get - should return 302 if no token is provided/invalid token', async () => {
     const response = await request(app)
       .get('/posts/1')
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('should update a post successfully', async () => {

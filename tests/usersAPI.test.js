@@ -98,7 +98,7 @@ describe('Users API', () => {
       .post('/users/follow')
       .send({ followId: dummyUser2Id });
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('should return 404 for non-existent user to follow', async () => {
@@ -126,7 +126,7 @@ describe('Users API', () => {
       .post('/users/unfollow')
       .send({ unfollowId: dummyUser2Id });
 
-    expect(response.statusCode).toBe(401);
+    expect(response.statusCode).toBe(302);
   });
 
   it('should not unfollow yourself', async () => {

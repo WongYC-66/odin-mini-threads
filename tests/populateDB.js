@@ -7,7 +7,7 @@ const { faker } = require('@faker-js/faker');
 faker.seed(123);
 
 const populateDB = async () => {
-    // create account admin1
+    // create account user1-user10
     let arr = Array(10).fill().map((_, i) => i + 1)
 
     let promiseArr = arr.map(async (x) => {
@@ -36,13 +36,13 @@ const populateDB = async () => {
             }
         })
     })
-    let responseArr = await Promise.all(promiseArr)
-    // follow self, like random post
+    let tenUsers = await Promise.all(promiseArr)
 
+    // follow self, like random post
     let postIdArr = await prisma.post.findMany()
     postIdArr = postIdArr.map(post => post.id).sort((a, b) => Math.random() - 0.5)
 
-    promiseArr = responseArr.map(user => {
+    promiseArr = tenUsers.map(user => {
         return prisma.user.update({
             where: { id: user.id },
             data: {
@@ -76,18 +76,18 @@ const populateDB = async () => {
         },
     })
 
-    promiseArr = Array(11).fill().map((_, i) => i + 1).map(userId =>
+    responseArr = tenUsers.map(user =>
         prisma.user.update({
             where: { id: guestUser.id },
             data: {
                 following: {
-                    connect: { id: userId }
+                    connect: { id: user.id }
                 },
             },
         })
     )
 
-    await Promise.all(promiseArr)
+    await Promise.all(responseArr)
 
 }
 
