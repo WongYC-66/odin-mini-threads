@@ -21,7 +21,7 @@ exports.get_posts = asyncHandler(async (req, res) => {
     })
 
     const data = allPosts.map(({ id, author }) => {
-        return { username: author.username, id : String(id) }
+        return { username: `@${author.username}`, id : String(id) }
     })
     console.log({data})
 
@@ -43,7 +43,7 @@ exports.get_users = asyncHandler(async (req, res) => {
     const allUsers = await prisma.user.findMany()
 
     const data = allUsers.map(({ username }) => {
-        return { username }
+        return { username: `@${username}` }
     })
 
     console.log({data})
