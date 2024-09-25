@@ -151,7 +151,7 @@ exports.get_one_post = asyncHandler(async (req, res) => {
 
 // Create a new post (protected route)
 exports.create_post = asyncHandler(async (req, res) => {
-    const { content } = req.body; // Extract content from request body
+    const { content, imgURL } = req.body; // Extract content from request body
     const userId = Number(req.user.id); // Get the ID of the authenticated user
 
     // Validate request data
@@ -160,12 +160,24 @@ exports.create_post = asyncHandler(async (req, res) => {
     }
 
     // Create a new post
-    const post = await prisma.post.create({
+    let post = await prisma.post.create({
         data: {
             content,
             authorId: userId, // Connect the post to the authenticated user
         },
     });
+
+    // allow 1 photo upload per post if there is.
+    if (imgURL) {
+        post = await prisma.post.update({
+            where: { id: post.id },
+            data: {
+                images: {
+                    create: { imgURL: imgURL }
+                }
+            }
+        })
+    }
 
     // Send the response
     res.status(201).json({
