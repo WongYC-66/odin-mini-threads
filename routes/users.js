@@ -5,15 +5,17 @@ const passport = require('passport')
 const usersController = require('../controllers/users.js');
 const { authenticateJWT } = require('../controllers/passport.js')
 
-const generateDomain = (req) => `${req.protocol}://${req.get('host')}/sign-in`
-
 // Route for github auth (open to all)
-router.get('/auth/github', passport.authenticate('github', { session: false }));
+router.get('/auth/github', (req, res, next) => {
+    const frontendUrl = req.query.frontendUrl;   // Get the front-end URL from query params
+    req.session.frontendUrl = frontendUrl;       // Store it in session or pass it directly to the next middleware
+    return passport.authenticate('github', { session: false })(req, res, next)
+});
 
 // receiving github auth confirmation from FE, now we go get access token from github, and then send jwtoken to FE
 router.get('/auth/github/callback',
     passport.authenticate('github', {
-        failureRedirect: (req) => `${generateDomain(req)}/sign-in`,
+        failureRedirect: (req) => `${req.session.frontendUrl}/sign-in`, // to be flexible when hosting FE at 2 diff domain e.g netlify, vercel
         session: false
     }),
     usersController.auth_github_success);
