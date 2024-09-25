@@ -109,10 +109,8 @@ exports.auth_github_success = asyncHandler(async (req, res) => {
         photoURL: req.user.userProfile.photoURL,
     });
 
-    const FE_domain = `${req.protocol}://${req.get('host')}`;
-
     // Generate the complete URL for redirection
-    const redirectUrl = `${FE_domain}/sign-in?${params.toString()}`;
+    const redirectUrl = `${req.cookies.frontendUrl}/sign-in?${params.toString()}`;
 
     // Redirect FE to the URL to sign-in
     return res.redirect(redirectUrl);
