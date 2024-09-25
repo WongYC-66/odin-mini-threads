@@ -70,8 +70,9 @@ passport.use(
 // Middleware for JWT authentication with a failure redirect
 exports.authenticateJWT = (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user) => {
+        const FE_domain = `${req.protocol}://${req.get('host')}`;
         if (err || !user) {
-            return res.redirect(`${process.env.FE_DOMAIN}/sign-in`);
+            return res.redirect(`${FE_domain}/sign-in`);
         }
         req.user = user;
         next();

@@ -10,7 +10,7 @@ router.get('/auth/github', passport.authenticate('github', { session: false }));
 
 // receiving github auth confirmation from FE, now we go get access token from github, and then send jwtoken to FE
 router.get('/auth/github/callback',
-    passport.authenticate('github', { failureRedirect: `${process.env.FE_DOMAIN}/sign-in`, session: false }),
+    passport.authenticate('github', { failureRedirect: `${req.protocol}://${req.get('host')}/sign-in`, session: false }),
     usersController.auth_github_success);
 
 // Route for user sign-up (open to all)
