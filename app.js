@@ -10,6 +10,7 @@ var usersRouter = require('./routes/users');
 var postsRouter = require('./routes/posts');
 var commentsRouter = require('./routes/comments');
 var profilesRouter = require('./routes/profiles');
+var nextRouter = require('./routes/next')
 
 // Loading .env files if not product enviroment
 if (process.env.environment != 'production')
@@ -39,6 +40,7 @@ app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/comments', commentsRouter);
 app.use('/profiles', profilesRouter);
+app.use('/next', nextRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
