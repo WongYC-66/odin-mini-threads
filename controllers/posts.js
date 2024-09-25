@@ -34,6 +34,7 @@ exports.get_post = asyncHandler(async (req, res) => {
                     // Do not select password or any other sensitive fields
                 },
             },
+            images: true,
             _count: {
                 select: {
                     likedBy: true,   // Count of likedBy users
@@ -112,6 +113,7 @@ exports.get_one_post = asyncHandler(async (req, res) => {
                     comments: true,  // Count of comments
                 },
             },
+            images: true,
             comments: {
                 select: {
                     id: true,       // Include comment ID

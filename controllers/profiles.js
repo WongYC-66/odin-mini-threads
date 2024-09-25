@@ -120,6 +120,7 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
                     // Do not select password or any other sensitive fields
                 },
             },
+            images: true,
             _count: {
                 select: {
                     likedBy: true,   // Count of likedBy users
@@ -161,6 +162,7 @@ exports.get_one_profile = asyncHandler(async (req, res) => {
                     id: true,
                     content: true,
                     timestamp: true,
+                    images: true,
                     _count: {
                         select: {
                             likedBy: true,   // Count of likedBy users
