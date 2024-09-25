@@ -9,7 +9,7 @@
     "resetDB": "npx prisma migrate reset -f && node ./tests/resetDB.js",
     "deployDB": "npx prisma migrate deploy",
     "test": "jest --verbose --runInBand",
-    "vercel" : "node ./bin/www_vercel"
+    "startVercel" : "node ./index.js"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
