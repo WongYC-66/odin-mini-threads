@@ -26,13 +26,14 @@ model User {
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   content   String
-  timestamp DateTime  @default(now())
-  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  timestamp DateTime    @default(now())
+  author    User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int
-  likedBy   User[]    @relation("PostLikes")
+  likedBy   User[]      @relation("PostLikes")
   comments  Comment[]
+  images    PostImage[]
 }
 
 model Comment {
@@ -54,4 +55,11 @@ model Profile {
   user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         Int     @unique
   privateProfile Boolean @default(false)
+}
+
+model PostImage {
+  id     Int    @id @default(autoincrement())
+  imgURL String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId Int
 }
