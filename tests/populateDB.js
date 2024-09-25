@@ -61,7 +61,7 @@ const populateDB = async () => {
 
     responseArr = await Promise.all(promiseArr)
 
-    // create Guest user, follow everyone :)
+    // create Guest user, follow self & everyone :)
     const guestUser = await prisma.user.create({
         data: {
             username: "guest",
@@ -76,7 +76,7 @@ const populateDB = async () => {
         },
     })
 
-    responseArr = tenUsers.map(user =>
+    responseArr = [guestUser, ...tenUsers].map(user =>
         prisma.user.update({
             where: { id: guestUser.id },
             data: {
