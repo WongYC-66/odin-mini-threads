@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt')
 
 // faker profile randomizer
 const { faker } = require('@faker-js/faker');
-faker.seed(123);
+faker.seed();
 
 const populateDB = async () => {
     // create account user1-user10
