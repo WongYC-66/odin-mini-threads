@@ -1,3 +1,4 @@
+<!-- GETTING STARTED -->
 ## About odinBook
 
 This is a clone of social media website (i.e Threads by Meta). This is part of project along <a href='https://www.theodinproject.com/lessons/node-path-nodejs-odin-book'>TheOdinProject course</a>.
@@ -36,6 +37,7 @@ Repo:
 3. Create .env file like .env-sample
 4. Populate fake database by,  npm run resetDB
 5. npm run dev
+6. [optional] npm run test 
 
 ### Installation FE
 1. Clone the fronend repo
