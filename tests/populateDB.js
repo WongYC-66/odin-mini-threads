@@ -26,9 +26,19 @@ const populateDB = async () => {
                     }
                 },
                 posts: {
-                    create: {
-                        content: faker.lorem.sentences({ min: 1, max: 3 }) + ". This is a fake posts, generated from faker",
-                    }
+                    create: [
+                        {
+                            content: faker.lorem.sentences({ min: 1, max: 3 }) + ". This is a fake posts, generated from faker",
+                            images: {
+                                create: {
+                                    imgURL: faker.image.url(),
+                                }
+                            }
+                        },
+                        {
+                            content: faker.lorem.sentences({ min: 1, max: 2 }) + ". This is a fake posts, generated from faker",
+                        },
+                    ]
                 },
             },
             include: {
@@ -38,9 +48,9 @@ const populateDB = async () => {
     })
     let tenUsers = await Promise.all(promiseArr)
 
-    // follow self, like random post
-    let postIdArr = await prisma.post.findMany()
-    postIdArr = postIdArr.map(post => post.id).sort((a, b) => Math.random() - 0.5)
+    // follow self, like random post, 
+    let allPosts = await prisma.post.findMany()
+    postIdArr = allPosts.map(post => post.id).sort(() => Math.random() - 0.5)
 
     promiseArr = tenUsers.map(user => {
         return prisma.user.update({
@@ -52,14 +62,28 @@ const populateDB = async () => {
                 postLiked: {
                     connect: { id: postIdArr.pop() }
                 }
-            },
-            include: {
-                userProfile: true,
             }
         })
     })
 
-    responseArr = await Promise.all(promiseArr)
+    // make random reply
+    let postIdArr2 = allPosts.map(post => post.id).sort(() => Math.random() - 0.5)
+    let promiseArr2 = tenUsers.map(user => {
+        return prisma.post.update({
+            where: { id: postIdArr2.pop() },
+            data: {
+                comments: {
+                    create: {
+                        content: faker.lorem.sentences({ min: 1, max: 2 }) + ". This is a fake comment, generated from faker",
+                        authorId: user.id
+                    }
+                }
+            }
+        })
+    })
+
+    // responseArr = await Promise.all([...promiseArr, ...promiseArr2])
+    responseArr = await Promise.all([...promiseArr, ...promiseArr2])
 
     // create Guest user, follow self & everyone :)
     const guestUser = await prisma.user.create({
