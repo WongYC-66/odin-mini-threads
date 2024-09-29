@@ -25,8 +25,8 @@ Test:
 - Backend API : JEST
 
 Repo:
-- front end : https://github.com/WongYC-66/odin-odin-book-FE
-- back end : https://github.com/WongYC-66/odin-mini-threads-FE
+- front end : https://github.com/WongYC-66/odin-mini-threads-FE
+- back end : https://github.com/WongYC-66/odin-mini-threads
 
 ### Prerequisite:
 1. Have postgreSQL and Node installed
