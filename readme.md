@@ -1,10 +1,12 @@
 <!-- GETTING STARTED -->
-## About odinBook
+## About MiniThreads
 
 This is a clone of social media website (i.e Threads by Meta). This is part of project along <a href='https://www.theodinproject.com/lessons/node-path-nodejs-odin-book'>TheOdinProject course</a>.
 
+![photo](threads-clone.png)
+
 Live DEMO : 
-- FrontEnd : https://odin-odinbook.netlify.app/
+- FrontEnd : https://odin-mini-threads.netlify.app/
 - Backend + Database: https://odin-odin-book.onrender.com/
 
 Current feature:
@@ -24,7 +26,7 @@ Test:
 
 Repo:
 - front end : https://github.com/WongYC-66/odin-odin-book-FE
-- back end : https://github.com/WongYC-66/odin-odin-book
+- back end : https://github.com/WongYC-66/odin-mini-threads-FE
 
 ### Prerequisite:
 1. Have postgreSQL and Node installed
