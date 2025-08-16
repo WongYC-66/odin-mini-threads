@@ -288,7 +288,7 @@ const uploadToDataBase = async (fileInfo, userId) => {
         )
     // upload = save to /10/logo.webp
     // console.log({data})
-    // console.log({error})
+    console.log({error})
 
     return { data, error }
 }

@@ -33,6 +33,7 @@ Repo:
 2. Register an Outh app at Github, and get CLIENT_ID and CLIENT_SECRET from https://github.com/settings/developers 
 3. Register an account at supabase to store uploaded image from https://supabase.com/, to get SUPABASE_PROJECT_URL and SUPABASE_API_KEY 
 
+
 ### Installation BE
 1. Clone the backend repo
 2. npm install
@@ -40,6 +41,9 @@ Repo:
 4. Populate fake database by,  npm run resetDB
 5. npm run dev
 6. [optional] npm run test 
+
+### Supabase
+1. in your supabase -> storage, create a bucket name "everything", set to Public
 
 ### Installation FE
 1. Clone the fronend repo
